@@ -1,0 +1,119 @@
+#!/bin/bash
+#
+# spider - ConquerClub API data downloader
+#
+#    Copyright (C) 2015 Rodrigo Silva (MestreLion) <conquerclub@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
+
+# TODO: autoamtic repair
+# TODO: command-line arguments
+
+page=${1:-1}  # absolute page to start with
+batches=${2:-5}  # how many batches to run
+mode=${3:-gamelist}
+
+urlmain="http://www.conquerclub.com/"
+
+JOBS=20    # Number of simultaneous fetching jobs to run in parallel
+ARGS=10    # Number of pages to fetch sequentially on each job (keep_alive conn)
+DELAY=2.0  # Delay between jobs, in seconds. 2.0 complies with "5 hits in 10s" policy
+ppb=1000   # Number of pages per batch
+
+# ------------------------------------
+
+curtime() {
+	date --rfc-3339=seconds
+}
+
+# ------------------------------------
+
+# Setup delay, only available in recent verions of parallel (20121222 onwards)
+if echo | parallel --delay "$DELAY" >/dev/null 2>&1; then
+	delay=(--delay "$DELAY")
+else
+	delay=()
+fi
+
+# If running a recent version of parallel that contains the BibTeX notice,
+# and it's not silenced yet, display the notice once so the user can silence it,
+# as per parallel's author request.
+# Adding --no-notice also works, but it's rude. Let's support the author!
+if echo | parallel --no-notice >/dev/null 2>&1 &&
+	! [[ -f "$HOME"/.parallel/will-cite ]]
+then
+	parallel --bibtex
+fi
+
+# ------------------------------------
+
+case "$mode" in
+gamelist)
+	urlapi="$urlmain/api.php?mode=gamelist&events=Y&names=Y&page="
+	pages=68720  # total number of pages
+;;
+tournamentlist)
+	urlapi="$urlmain/api.php?mode=tournamentlist&names=Y&page="
+	pages=267  # total number of pages
+;;
+*)
+	echo "unknown mode: $mode"
+	exit 1
+;;
+esac
+
+for batch in $(seq 1 "$batches"); do
+
+	if [[ -f "stop" ]]; then
+		echo "Stop requested"
+		break
+	fi
+
+	# Calculate end page
+	endpage=$((page + ppb - 1))
+
+	if ((endpage > pages)); then
+		endpage=$pages
+	fi
+
+	echo "$(curtime) - Starting batch $batch of $batches - pages $page - $endpage"
+
+	dirname=$(printf '%03d' $(((page-1)/ppb)))
+	tag="${mode}-${dirname}-pages-${page}-${endpage}"
+
+	mkdir -p -- "$dirname"
+	time seq "$page" "$endpage" |
+	parallel --gnu --progress --joblog "$tag".log \
+		--jobs "$JOBS" --max-replace-args "$ARGS" "${delay[@]}" -- \
+			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
+	sleep "${DELAY}"
+
+	# archive
+	echo "$(curtime) - Batch $batch finished, compressing"
+	cd "$dirname"
+	7z a ../"$tag" -- * >/dev/null &  # 7z is way too chatty!
+	cd - >/dev/null
+
+	# get ready for next batch
+	((page = endpage + 1))
+	if ((page > pages)); then
+		break
+	fi
+done
+
+echo "Waiting for pending tasks..."
+wait
+
+echo "$(curtime) - Done!"
+echo "Next page: $((page))"
