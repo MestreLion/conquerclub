@@ -17,8 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
 
-# TODO: autoamtic repair
+# TODO: automatic repair
 # TODO: command-line arguments
+# TODO: main logger
+# TODO: check and install requirements
+# TODO: automatically update last page
+
+# Default options -------------------------------------------------------------
 
 page=${1:-1}  # absolute page to start with
 batches=${2:-5}  # how many batches to run
@@ -31,13 +36,73 @@ ARGS=10    # Number of pages to fetch sequentially on each job (keep_alive conn)
 DELAY=2.0  # Delay between jobs, in seconds. 2.0 complies with "5 hits in 10s" policy
 ppb=1000   # Number of pages per batch
 
-# ------------------------------------
+verbose=1
 
-curtime() {
-	date --rfc-3339=seconds
+# Constants and other globals -------------------------------------------------
+
+myname=${0##*/}
+mydir=$(dirname "$(readlink -f "$0")")
+
+
+# Generic helper functions ----------------------------------------------------
+
+bold()    { tput bold; printf '%s' "$@"; tput sgr0; }
+red()     { tput setaf 1; bold "$@"; }
+green()   { tput setaf 2; bold "$@"; }
+
+fatal()   { if (($#)); then echo "$(red '* ' "$@")" >&2; fi; exit 1; }
+message() { if ((verbose)); then echo "$(green '* ' "$@")"; fi; }
+ppath()   { printf '%q' "$@"; }
+
+curtime() { date --rfc-3339=seconds; }
+exists()  { type "$@" >/dev/null 2>&1; }
+
+ceildiv() {
+	local num=${1:-0}
+	local div=${2:-1}
+	echo $(( (num + div - 1) / div ))
 }
 
-# ------------------------------------
+ceilnear() {
+	local num=${1:-0}
+	local near=${2:-1000}
+	echo $(( $(ceildiv "$num" "$near") * near ))
+}
+
+confirm()
+{
+	local msg=$(bold "${@:-"Confirm?"}")
+	local default=$(bold "NO")
+	local reply
+
+	if ! ((yes)); then
+		read -p "* $msg (y/n, default $default): " reply
+		reply="${reply:-$default}"
+		case "$reply" in
+			[Yy]*) ;;
+			*) message "Canceled"; exit 1;;
+		esac
+	fi
+}
+
+require() {
+	local cmd="$1"
+	shift
+	local packages="${@:-$cmd}"
+	local reqmsg="$myname requires '$cmd'"
+
+	if exists "$cmd"; then return; fi
+
+	exists apt-get || fatal "$reqmsg, please install it and try again."
+	confirm "$reqmsg, want to install packages?" \
+		" (need administrator priviledges)"
+	message "Installing package ${packages[@]}"
+	sudo apt-get install -y "${packages[@]}" ||
+		fatal "Error installing packages (did you cancel it?)"
+}
+
+
+# Parallel set-up -------------------------------------------------------------
 
 # Setup delay, only available in recent verions of parallel (20121222 onwards)
 if echo | parallel --delay "$DELAY" >/dev/null 2>&1; then
@@ -56,7 +121,8 @@ then
 	parallel --bibtex
 fi
 
-# ------------------------------------
+
+# Main logic and procedures ---------------------------------------------------
 
 case "$mode" in
 gamelist)
