@@ -31,12 +31,14 @@ mode=${3:-gamelist}
 
 urlmain="http://www.conquerclub.com/"
 
-JOBS=20    # Number of simultaneous fetching jobs to run in parallel
-ARGS=10    # Number of pages to fetch sequentially on each job (keep_alive conn)
+jobs=20    # Number of simultaneous fetching jobs to run in parallel
+args=10    # Number of pages to fetch sequentially on each job (keep_alive conn)
 DELAY=2.0  # Delay between jobs, in seconds. 2.0 complies with "5 hits in 10s" policy
 ppb=1000   # Number of pages per batch
 
-verbose=1
+verbose=1  # Verbose mode, output informative messages
+yes=0      # Automatically answer "yes" to all questions
+
 
 # Constants and other globals -------------------------------------------------
 
@@ -56,6 +58,8 @@ ppath()   { printf '%q' "$@"; }
 
 curtime() { date --rfc-3339=seconds; }
 exists()  { type "$@" >/dev/null 2>&1; }
+min()     { if (( "$1" < "$2" )); then echo "$1"; else echo "$2"; fi; }
+max()     { if (( "$1" > "$2" )); then echo "$1"; else echo "$2"; fi; }
 
 ceildiv() {
 	local num=${1:-0}
@@ -102,13 +106,20 @@ require() {
 }
 
 
+# Requirements ----------------------------------------------------------------
+
+require parallel  parallel
+require 7z        p7zip-full
+
+
 # Parallel set-up -------------------------------------------------------------
 
 # Setup delay, only available in recent verions of parallel (20121222 onwards)
 if echo | parallel --delay "$DELAY" >/dev/null 2>&1; then
-	delay=(--delay "$DELAY")
+	argdelay=(--delay "$DELAY")
 else
-	delay=()
+	argdelay=()
+	jobs=$(max "$jobs" 10)
 fi
 
 # If running a recent version of parallel that contains the BibTeX notice,
@@ -161,7 +172,7 @@ for batch in $(seq 1 "$batches"); do
 	mkdir -p -- "$dirname"
 	time seq "$page" "$endpage" |
 	parallel --gnu --progress --joblog "$tag".log \
-		--jobs "$JOBS" --max-replace-args "$ARGS" "${delay[@]}" -- \
+		--jobs "$jobs" --max-replace-args "$args" "${argdelay[@]}" -- \
 			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
 	sleep "${DELAY}"
 
