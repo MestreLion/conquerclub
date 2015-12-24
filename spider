@@ -18,10 +18,9 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
 
 # TODO: automatic repair
-# TODO: command-line arguments
 # TODO: main logger
-# TODO: check and install requirements
 # TODO: automatically update last page
+# TODO: true quiet mode
 
 
 # Default options -------------------------------------------------------------
@@ -45,6 +44,7 @@ mydir=$(dirname "$(readlink -f "$0")")
 
 urlmain="http://www.conquerclub.com/"
 
+
 # Generic helper functions ----------------------------------------------------
 
 bold()    { tput bold; printf '%s' "$@"; tput sgr0; }
@@ -53,13 +53,13 @@ green()   { tput setaf 2; bold "$@"; }
 
 fatal()   { if (($#)); then echo "$(red '* ' "$@")" >&2; fi; exit 1; }
 message() { if ((verbose)); then echo "$(green '* ' "$@")"; fi; }
+argerr()  { echo $(red "* ${1:-error}") >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
 integer() { [[ "${1:-}" != *[!0-9]* ]] ||
             argerr "'${1:-}'${2:+ in $2} is not an integer." ; }
 numeric() { [[ "$1" ]] || missing "$2" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$';
             [[ "$1" =~ $re ]] || argerr "'$1'${2:+ in $2} is not a number."; }
-argerr()  { echo $(red "${myname}: ${1:-error}") >&2; usage 1; }
-invalid() { argerr "invalid option: ${1:-}" ; }
-missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
 
 curtime() { date --rfc-3339=seconds; }
 exists()  { type "$@" >/dev/null 2>&1; }
@@ -162,11 +162,19 @@ while (( $# )); do
 	--quiet         ) verbose=0            ;;
 	--yes           ) yes=1                ;;
 
-	-*              ) invalid "$1"         ;;
-	*               ) argerr "$1"          ;;
+	*               ) invalid "$1"         ;;
 	esac
 	shift
 done
+
+[[ "$mode" ]] || missing "--mode" "MODE"
+
+integer "$page"    "--page"
+integer "$batches" "--batches"
+integer "$jobs"    "--jobs"
+integer "$args"    "--args"
+integer "$ppb"     "--ppb"
+numeric "$delay"   "--delay"
 
 
 # Requirements ----------------------------------------------------------------
