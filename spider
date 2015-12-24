@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -u
 #
 # spider - ConquerClub API data downloader
 #
@@ -23,18 +23,16 @@
 # TODO: check and install requirements
 # TODO: automatically update last page
 
+
 # Default options -------------------------------------------------------------
 
-page=${1:-1}  # absolute page to start with
-batches=${2:-5}  # how many batches to run
-mode=${3:-gamelist}
-
-urlmain="http://www.conquerclub.com/"
-
-jobs=20    # Number of simultaneous fetching jobs to run in parallel
-args=10    # Number of pages to fetch sequentially on each job (keep_alive conn)
-DELAY=2.0  # Delay between jobs, in seconds. 2.0 complies with "5 hits in 10s" policy
-ppb=1000   # Number of pages per batch
+page=1         # absolute page to start with
+batches=5      # how many batches to run
+mode=gamelist  # download mode
+jobs=20        # Number of simultaneous fetching jobs to run in parallel
+args=10        # Number of pages to fetch sequentially on each job (keep_alive)
+delay=2.0      # Delay between jobs, in seconds. 2.0 for "5 hits in 10s" policy
+ppb=1000       # Number of pages per batch
 
 verbose=1  # Verbose mode, output informative messages
 yes=0      # Automatically answer "yes" to all questions
@@ -45,6 +43,7 @@ yes=0      # Automatically answer "yes" to all questions
 myname=${0##*/}
 mydir=$(dirname "$(readlink -f "$0")")
 
+urlmain="http://www.conquerclub.com/"
 
 # Generic helper functions ----------------------------------------------------
 
@@ -54,7 +53,13 @@ green()   { tput setaf 2; bold "$@"; }
 
 fatal()   { if (($#)); then echo "$(red '* ' "$@")" >&2; fi; exit 1; }
 message() { if ((verbose)); then echo "$(green '* ' "$@")"; fi; }
-ppath()   { printf '%q' "$@"; }
+integer() { [[ "${1:-}" != *[!0-9]* ]] ||
+            argerr "'${1:-}'${2:+ in $2} is not an integer." ; }
+numeric() { [[ "$1" ]] || missing "$2" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$';
+            [[ "$1" =~ $re ]] || argerr "'$1'${2:+ in $2} is not a number."; }
+argerr()  { echo $(red "${myname}: ${1:-error}") >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
 
 curtime() { date --rfc-3339=seconds; }
 exists()  { type "$@" >/dev/null 2>&1; }
@@ -106,6 +111,64 @@ require() {
 }
 
 
+# Main functions --------------------------------------------------------------
+
+usage() {
+	cat <<-USAGE
+	Usage: $myname [options]
+	USAGE
+	if [[ "${1:-}" ]] ; then
+		cat >&2 <<- USAGE
+		Try '$myname --help' for more information.
+		USAGE
+		exit 1
+	fi
+	cat <<-USAGE
+
+	ConquerClub API data downloader
+
+	Options:
+	  -h|--help   - show this page
+	  -q|--quiet  - do not output informative messages or progress
+
+	Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+	USAGE
+	exit 0
+}
+
+
+# Command-line arguments ------------------------------------------------------
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	--page=*        ) page=${1#*=}         ;;
+	--batches=*     ) batches=${1#*=}      ;;
+	--mode=*        ) mode=${1#*=}         ;;
+	--jobs=*        ) jobs=${1#*=}         ;;
+	--args=*        ) args=${1#*=}         ;;
+	--delay=*       ) delay=${1#*=}        ;;
+	--ppb=*         ) ppb=${1#*=}          ;;
+
+	--page          ) shift ; page=$1      ;;
+	--batches       ) shift ; batches=$1   ;;
+	--mode          ) shift ; mode=$1      ;;
+	--jobs          ) shift ; jobs=$1      ;;
+	--args          ) shift ; args=$1      ;;
+	--delay         ) shift ; delay=$1     ;;
+	--ppb           ) shift ; ppb=$1       ;;
+
+	--quiet         ) verbose=0            ;;
+	--yes           ) yes=1                ;;
+
+	-*              ) invalid "$1"         ;;
+	*               ) argerr "$1"          ;;
+	esac
+	shift
+done
+
+
 # Requirements ----------------------------------------------------------------
 
 require parallel  parallel
@@ -115,8 +178,8 @@ require 7z        p7zip-full
 # Parallel set-up -------------------------------------------------------------
 
 # Setup delay, only available in recent verions of parallel (20121222 onwards)
-if echo | parallel --delay "$DELAY" >/dev/null 2>&1; then
-	argdelay=(--delay "$DELAY")
+if echo | parallel --delay "$delay" >/dev/null 2>&1; then
+	argdelay=(--delay "$delay")
 else
 	argdelay=()
 	jobs=$(max "$jobs" 10)
@@ -145,13 +208,22 @@ tournamentlist)
 	pages=267  # total number of pages
 ;;
 *)
-	echo "unknown mode: $mode"
-	exit 1
+	fatal "unknown mode: $mode"
 ;;
 esac
 
-for batch in $(seq 1 "$batches"); do
+if ((verbose)); then
+	message "Options:"
+	echo "- Data mode:         $mode"
+	echo "- Start Page:        $page"
+	echo "- Number of batches: $batches"
+	echo "- Simultaneous jobs: $jobs"
+	echo "- Job delay:         $delay"
+	echo "- Pages per job:     $args"
+	echo "- Pages per batch:   $ppb"
+fi
 
+for batch in $(seq 1 "$batches"); do
 	if [[ -f "stop" ]]; then
 		echo "Stop requested"
 		break
@@ -174,7 +246,7 @@ for batch in $(seq 1 "$batches"); do
 	parallel --gnu --progress --joblog "$tag".log \
 		--jobs "$jobs" --max-replace-args "$args" "${argdelay[@]}" -- \
 			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
-	sleep "${DELAY}"
+	sleep "${delay}"
 
 	# archive
 	echo "$(curtime) - Batch $batch finished, compressing"
