@@ -25,16 +25,16 @@
 
 # Default options -------------------------------------------------------------
 
-page=1         # absolute page to start with
-batches=5      # how many batches to run
-mode=gamelist  # download mode
-jobs=20        # Number of simultaneous fetching jobs to run in parallel
-args=10        # Number of pages to fetch sequentially on each job (keep_alive)
-delay=2.0      # Delay between jobs, in seconds. 2.0 for "5 hits in 10s" policy
-ppb=1000       # Number of pages per batch
+page=1
+batches=5
+mode=gamelist
+jobs=20
+args=10
+delay=2.0
+ppb=1000
 
-verbose=1  # Verbose mode, output informative messages
-yes=0      # Automatically answer "yes" to all questions
+verbose=1
+yes=0
 
 
 # Constants and other globals -------------------------------------------------
@@ -127,9 +127,47 @@ usage() {
 
 	ConquerClub API data downloader
 
-	Options:
-	  -h|--help   - show this page
-	  -q|--quiet  - do not output informative messages or progress
+	General options:
+	  -h|--help  - show this page
+	  -q|--quiet - do not output informative messages or progress*
+	  -y|--yes   - automatically answer "yes" to all questions
+
+	Download options:
+	  --mode MODE
+	             what data to download. Current options are 'gamelist',
+	             'tournamentlist'. [default: '$mode']
+
+	  --page NUM
+	             absolute page to start downloading. [default: $page]
+
+	  --batches NUM
+	             number of batches to run. Zero means all batches until
+	             last page*. [default: $batches]
+
+	  --ppb NUM
+	             number of pages per batch. [default: $ppb]
+
+	  --jobs NUM
+	             how many simultaneous fetching jobs to run in parallel.
+	             If your parallel version does not support job delay, jobs
+	             are limited to a maximum of 10 (see --delay).
+	             [default: $jobs]
+
+	  --args NUM
+	             how many pages to fetch sequentially on each job.
+	             Increasing args make each job take longer, but each job is
+	             a single server connection, so it benefits from keep_alive
+	             HTTP headers. [default: $args]
+
+	  --delay NUM
+	             delay between starting new simultaneous jobs, in seconds.
+	             Prevents overloading the server with too many simultaneous
+	             requests. The deault is adequate for the "maximum of 5
+	             requests per 10 seconds" API policy. Requires parallel
+	             version 20121222+. Fractional numbers are accepted.
+	             [default: $delay]
+
+	* - Not fully implemented yet
 
 	Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
 	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
@@ -159,8 +197,8 @@ while (( $# )); do
 	--delay         ) shift ; delay=$1     ;;
 	--ppb           ) shift ; ppb=$1       ;;
 
-	--quiet         ) verbose=0            ;;
-	--yes           ) yes=1                ;;
+	-q|--quiet      ) verbose=0            ;;
+	-y|--yes        ) yes=1                ;;
 
 	*               ) invalid "$1"         ;;
 	esac
