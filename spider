@@ -111,6 +111,18 @@ require() {
 		fatal "Error installing packages (did you cancel it?)"
 }
 
+benchmark() {
+	local start=$1
+	local num=$2
+	local name=${3:-page}
+	local secs=$(($(date +%s) - start))
+
+	echo "$secs seconds" \
+		"($(date +%T -d"@$secs" -u))," \
+		$(awk -v s="$secs" -v n="$num" 'BEGIN{print s/n; exit}') \
+		"seconds per $name"
+}
+
 
 # Main functions --------------------------------------------------------------
 
@@ -217,6 +229,20 @@ numeric "$delay"   "--delay"
 
 if ((ppb <= 0)); then argerr "pages per batch must be greater than 0"; fi
 
+case "$mode" in
+gamelist)
+	urlapi="$urlmain/api.php?mode=gamelist&events=Y&names=Y&page="
+	pages=68720  # total number of pages
+;;
+tournamentlist)
+	urlapi="$urlmain/api.php?mode=tournamentlist&names=Y&page="
+	pages=267  # total number of pages
+;;
+*)
+	fatal "unknown mode: $mode"
+;;
+esac
+
 
 # Requirements ----------------------------------------------------------------
 
@@ -254,20 +280,6 @@ fi
 
 # Main logic and procedures ---------------------------------------------------
 
-case "$mode" in
-gamelist)
-	urlapi="$urlmain/api.php?mode=gamelist&events=Y&names=Y&page="
-	pages=68720  # total number of pages
-;;
-tournamentlist)
-	urlapi="$urlmain/api.php?mode=tournamentlist&names=Y&page="
-	pages=267  # total number of pages
-;;
-*)
-	fatal "unknown mode: $mode"
-;;
-esac
-
 if ((verbose)); then
 	message "Starting $myname with the following options:"
 	echo "- Data mode:         $mode"
@@ -292,20 +304,23 @@ for batch in $(seq 1 "$batches"); do
 		endpage=$pages
 	fi
 
-	message "Starting batch $batch of $batches - pages $page - $endpage"
+	message "Starting batch $batch of $batches, pages $page to $endpage"
+	batchstart=$(date +%s)
 
 	dirname=$(printf '%03d' $(((page-1)/ppb)))
 	tag="${mode}-${dirname}-pages-${page}-${endpage}"
 
 	mkdir -p -- "$dirname"
-	time seq "$page" "$endpage" |
+	seq "$page" "$endpage" |
 	parallel "${parallelargs[@]}" --joblog "$tag".log \
 		--jobs "$jobs" --max-replace-args "$args" -- \
 			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
 	sleep "${delay}"
 
+	message "Batch $batch finished: " \
+		"$(benchmark $batchstart $((endpage - page + 1)))"
+
 	# archive
-	message "Batch $batch finished, compressing"
 	cd "$dirname"
 	7z a ../"$tag" -- * >/dev/null &  # 7z is way too chatty!
 	cd - >/dev/null
