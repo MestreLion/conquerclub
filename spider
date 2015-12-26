@@ -52,7 +52,7 @@ red()     { tput setaf 1; bold "$@"; }
 green()   { tput setaf 2; bold "$@"; }
 
 fatal()   { if (($#)); then echo "$(red '* ' "$@")" >&2; fi; exit 1; }
-message() { if ((verbose)); then echo "$(green '* ' "$@")"; fi; }
+message() { if ((verbose)); then echo "$(green '* ' "$(curtime) - $@")"; fi; }
 argerr()  { echo $(red "* ${1:-error}") >&2; usage 1; }
 invalid() { argerr "invalid option: ${1:-}" ; }
 missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
@@ -259,7 +259,7 @@ tournamentlist)
 esac
 
 if ((verbose)); then
-	message "Options:"
+	message "Starting $myname with the following options:"
 	echo "- Data mode:         $mode"
 	echo "- Start Page:        $page"
 	echo "- Number of batches: $batches"
@@ -271,7 +271,7 @@ fi
 
 for batch in $(seq 1 "$batches"); do
 	if [[ -f "stop" ]]; then
-		echo "Stop requested"
+		message "Stop requested"
 		break
 	fi
 
@@ -282,7 +282,7 @@ for batch in $(seq 1 "$batches"); do
 		endpage=$pages
 	fi
 
-	echo "$(curtime) - Starting batch $batch of $batches - pages $page - $endpage"
+	message "Starting batch $batch of $batches - pages $page - $endpage"
 
 	dirname=$(printf '%03d' $(((page-1)/ppb)))
 	tag="${mode}-${dirname}-pages-${page}-${endpage}"
@@ -295,7 +295,7 @@ for batch in $(seq 1 "$batches"); do
 	sleep "${delay}"
 
 	# archive
-	echo "$(curtime) - Batch $batch finished, compressing"
+	message "Batch $batch finished, compressing"
 	cd "$dirname"
 	7z a ../"$tag" -- * >/dev/null &  # 7z is way too chatty!
 	cd - >/dev/null
@@ -307,8 +307,8 @@ for batch in $(seq 1 "$batches"); do
 	fi
 done
 
-echo "Waiting for pending tasks..."
+message "Waiting for pending tasks..."
 wait
 
-echo "$(curtime) - Done!"
-echo "Next page: $((page))"
+message "Done!"
+message "Next page: $((page))"
