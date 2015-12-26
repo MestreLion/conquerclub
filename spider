@@ -53,6 +53,7 @@ green()   { tput setaf 2; bold "$@"; }
 
 fatal()   { if (($#)); then echo "$(red '* ' "$@")" >&2; fi; exit 1; }
 message() { if ((verbose)); then echo "$(green '* ' "$(curtime) - $@")"; fi; }
+warning() { if ((verbose)); then echo "$(red '* ' "$@")"; fi; }
 argerr()  { echo $(red "* ${1:-error}") >&2; usage 1; }
 invalid() { argerr "invalid option: ${1:-}" ; }
 missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
@@ -214,6 +215,8 @@ integer "$args"    "--args"
 integer "$ppb"     "--ppb"
 numeric "$delay"   "--delay"
 
+if ((ppb <= 0)); then argerr "pages per batch must be greater than 0"; fi
+
 
 # Requirements ----------------------------------------------------------------
 
@@ -223,11 +226,14 @@ require 7z        p7zip-full
 
 # Parallel set-up -------------------------------------------------------------
 
+parallelargs=(--gnu)
+
 # Setup delay, only available in recent verions of parallel (20121222 onwards)
 if echo | parallel --delay "$delay" >/dev/null 2>&1; then
-	argdelay=(--delay "$delay")
+	parallelargs+=(--delay "$delay")
 else
-	argdelay=()
+	warning "Your 'parallel' version does not suport job delay." \
+		" Limiting jobs to 10"
 	jobs=$(max "$jobs" 10)
 fi
 
@@ -239,6 +245,10 @@ if echo | parallel --no-notice >/dev/null 2>&1 &&
 	! [[ -f "$HOME"/.parallel/will-cite ]]
 then
 	parallel --bibtex
+fi
+
+if ((verbose)); then
+	parallelargs+=(--progress)
 fi
 
 
@@ -289,8 +299,8 @@ for batch in $(seq 1 "$batches"); do
 
 	mkdir -p -- "$dirname"
 	time seq "$page" "$endpage" |
-	parallel --gnu --progress --joblog "$tag".log \
-		--jobs "$jobs" --max-replace-args "$args" "${argdelay[@]}" -- \
+	parallel "${parallelargs[@]}" --joblog "$tag".log \
+		--jobs "$jobs" --max-replace-args "$args" -- \
 			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
 	sleep "${delay}"
 
