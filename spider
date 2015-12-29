@@ -57,11 +57,10 @@ warning() { if ((verbose)); then echo "$(red '* ' "$@")"; fi; }
 argerr()  { echo $(red "* ${1:-error}") >&2; usage 1; }
 invalid() { argerr "invalid option: ${1:-}" ; }
 missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
-integer() { [[ "${1:-}" != *[!0-9]* ]] ||
-            argerr "'${1:-}'${2:+ in $2} is not an integer." ; }
-numeric() { [[ "$1" ]] || missing "$2" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$';
-            [[ "$1" =~ $re ]] || argerr "'$1'${2:+ in $2} is not a number."; }
-
+integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
+            argerr "'$1'${2:+ in $2} is not an integer."; }
+numeric() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$'
+            [[ "$1" =~ $re ]] || argerr "'${1:-}'${2:+ in $2} is not a number."; }
 curtime() { date --rfc-3339=seconds; }
 exists()  { type "$@" >/dev/null 2>&1; }
 min()     { if (( "$1" < "$2" )); then echo "$1"; else echo "$2"; fi; }
@@ -194,26 +193,26 @@ usage() {
 for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
-	--page=*        ) page=${1#*=}         ;;
-	--batches=*     ) batches=${1#*=}      ;;
-	--mode=*        ) mode=${1#*=}         ;;
-	--jobs=*        ) jobs=${1#*=}         ;;
-	--args=*        ) args=${1#*=}         ;;
-	--delay=*       ) delay=${1#*=}        ;;
-	--ppb=*         ) ppb=${1#*=}          ;;
+	--page=*        ) page=${1#*=}           ;;
+	--batches=*     ) batches=${1#*=}        ;;
+	--mode=*        ) mode=${1#*=}           ;;
+	--jobs=*        ) jobs=${1#*=}           ;;
+	--args=*        ) args=${1#*=}           ;;
+	--delay=*       ) delay=${1#*=}          ;;
+	--ppb=*         ) ppb=${1#*=}            ;;
 
-	--page          ) shift ; page=$1      ;;
-	--batches       ) shift ; batches=$1   ;;
-	--mode          ) shift ; mode=$1      ;;
-	--jobs          ) shift ; jobs=$1      ;;
-	--args          ) shift ; args=$1      ;;
-	--delay         ) shift ; delay=$1     ;;
-	--ppb           ) shift ; ppb=$1       ;;
+	--page          ) shift ; page=${1:-}    ;;
+	--batches       ) shift ; batches=${1:-} ;;
+	--mode          ) shift ; mode=${1:-}    ;;
+	--jobs          ) shift ; jobs=${1:-}    ;;
+	--args          ) shift ; args=${1:-}    ;;
+	--delay         ) shift ; delay=${1:-}   ;;
+	--ppb           ) shift ; ppb=${1:-}     ;;
 
-	-q|--quiet      ) verbose=0            ;;
-	-y|--yes        ) yes=1                ;;
+	-q|--quiet      ) verbose=0              ;;
+	-y|--yes        ) yes=1                  ;;
 
-	*               ) invalid "$1"         ;;
+	*               ) invalid "$1"           ;;
 	esac
 	shift
 done
