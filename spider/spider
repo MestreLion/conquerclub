@@ -31,6 +31,8 @@ args=10
 delay=2.0
 ppb=1000
 
+workdir='.'
+
 verbose=1
 yes=0
 logging=1
@@ -188,8 +190,15 @@ usage() {
 
 	  --no-log
 	            do not create log files. By default $myname creates a master
-	            log file at './$myname-<MODE>-<TIMESTAMP>.log', and also
-	            a parallel log for each completed batch.
+	            log file at '<WORKDIR>/$myname-<MODE>-<TIMESTAMP>.log', and
+	            also a parallel log for each completed batch.
+
+	  --work-dir DIR
+	            target root directory to download files. Pages will be
+	            downloaded to <WORKDIR>/<MODE>/current and then moved to
+	            <WORKDIR>/<MODE>/pages/<BATCH> once completed. All dirs will
+	            be created if necessary.
+	            [default: $workdir]
 
 	* - Not fully implemented yet
 
@@ -212,6 +221,7 @@ while (( $# )); do
 	--args=*        ) args=${1#*=}           ;;
 	--delay=*       ) delay=${1#*=}          ;;
 	--ppb=*         ) ppb=${1#*=}            ;;
+	--workdir=*     ) workdir=${1#*=}        ;;
 
 	--page          ) shift ; page=${1:-}    ;;
 	--batches       ) shift ; batches=${1:-} ;;
@@ -220,6 +230,7 @@ while (( $# )); do
 	--args          ) shift ; args=${1:-}    ;;
 	--delay         ) shift ; delay=${1:-}   ;;
 	--ppb           ) shift ; ppb=${1:-}     ;;
+	--workdir       ) shift ; workdir=${1:-} ;;
 
 	-q|--quiet      ) verbose=0              ;;
 	-y|--yes        ) yes=1                  ;;
@@ -255,7 +266,11 @@ tournamentlist)
 ;;
 esac
 
-logfile="${myname}-${mode}-$(date +%Y%m%d%H%M%S).log"
+workdir=$(readlink -f "$workdir")
+logfile=${workdir}/${myname}-${mode}-$(date +%Y%m%d%H%M%S).log
+outdir=${workdir}/${mode}
+curdir=${outdir}/current
+pagedir=${outdir}/pages
 
 
 # Requirements ----------------------------------------------------------------
@@ -303,7 +318,12 @@ if ((verbose)); then
 	logmsg "	Job delay:         $delay"
 	logmsg "	Pages per job:     $args"
 	logmsg "	Pages per batch:   $ppb"
+	logmsg "	Download dir:      $curdir"
 fi
+
+mkdir -p -- "$workdir" "$outdir" "$pagedir" "$curdir" &&
+cd "$curdir" ||
+fatal "could not create directories"
 
 for batch in $(seq 1 "$batches"); do
 	if [[ -f "stop" ]]; then
@@ -338,6 +358,8 @@ for batch in $(seq 1 "$batches"); do
 
 	logmsg "Batch $batch finished: " \
 		"$(benchmark $batchstart $((endpage - page + 1)))"
+
+	# TODO: verify, rename, move, archive
 
 	# archive
 	cd "$dirname"
