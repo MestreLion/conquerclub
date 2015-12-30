@@ -18,9 +18,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
 
 # TODO: automatic repair
-# TODO: main logger
 # TODO: automatically update last page
-# TODO: true quiet mode
 
 
 # Default options -------------------------------------------------------------
@@ -35,6 +33,7 @@ ppb=1000
 
 verbose=1
 yes=0
+logging=1
 
 
 # Constants and other globals -------------------------------------------------
@@ -122,6 +121,14 @@ benchmark() {
 		"seconds per $name"
 }
 
+logger() {
+	if !((logging)); then return; fi
+	if [[ "${logfile:-}" ]]; then
+		echo "$(curtime) - $@" >> "${logfile}"
+	fi
+}
+
+logmsg() { logger "$@"; message "$@"; }
 
 # Main functions --------------------------------------------------------------
 
@@ -141,7 +148,7 @@ usage() {
 
 	General options:
 	  -h|--help  - show this page
-	  -q|--quiet - do not output informative messages or progress*
+	  -q|--quiet - do not output informative messages or progress
 	  -y|--yes   - automatically answer "yes" to all questions
 
 	Download options:
@@ -179,6 +186,11 @@ usage() {
 	             version 20121222+. Fractional numbers are accepted.
 	             [default: $delay]
 
+	  --no-log
+	            do not create log files. By default $myname creates a master
+	            log file at './$myname-<MODE>-<TIMESTAMP>.log', and also
+	            a parallel log for each completed batch.
+
 	* - Not fully implemented yet
 
 	Copyright (C) 2015 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
@@ -211,6 +223,7 @@ while (( $# )); do
 
 	-q|--quiet      ) verbose=0              ;;
 	-y|--yes        ) yes=1                  ;;
+	--no-log        ) logging=0              ;;
 
 	*               ) invalid "$1"           ;;
 	esac
@@ -241,6 +254,8 @@ tournamentlist)
 	fatal "unknown mode: $mode"
 ;;
 esac
+
+logfile="${myname}-${mode}-$(date +%Y%m%d%H%M%S).log"
 
 
 # Requirements ----------------------------------------------------------------
@@ -280,19 +295,19 @@ fi
 # Main logic and procedures ---------------------------------------------------
 
 if ((verbose)); then
-	message "Starting $myname with the following options:"
-	echo "- Data mode:         $mode"
-	echo "- Start Page:        $page"
-	echo "- Number of batches: $batches"
-	echo "- Simultaneous jobs: $jobs"
-	echo "- Job delay:         $delay"
-	echo "- Pages per job:     $args"
-	echo "- Pages per batch:   $ppb"
+	logmsg "Starting $myname with the following options:"
+	logmsg "	Data mode:         $mode"
+	logmsg "	Start Page:        $page"
+	logmsg "	Number of batches: $batches"
+	logmsg "	Simultaneous jobs: $jobs"
+	logmsg "	Job delay:         $delay"
+	logmsg "	Pages per job:     $args"
+	logmsg "	Pages per batch:   $ppb"
 fi
 
 for batch in $(seq 1 "$batches"); do
 	if [[ -f "stop" ]]; then
-		message "Stop requested"
+		logmsg "Stop requested"
 		break
 	fi
 
@@ -303,20 +318,25 @@ for batch in $(seq 1 "$batches"); do
 		endpage=$pages
 	fi
 
-	message "Starting batch $batch of $batches, pages $page to $endpage"
+	logmsg "Starting batch $batch of $batches, pages $page to $endpage"
 	batchstart=$(date +%s)
 
 	dirname=$(printf '%03d' $(((page-1)/ppb)))
 	tag="${mode}-${dirname}-pages-${page}-${endpage}"
 
+	parallelbatchargs=("${parallelargs[@]}")
+	if ((logging)); then
+		parallelbatchargs+=(--joblog "$tag".log)
+	fi
+
 	mkdir -p -- "$dirname"
 	seq "$page" "$endpage" |
-	parallel "${parallelargs[@]}" --joblog "$tag".log \
+	parallel "${parallelbatchargs[@]}" \
 		--jobs "$jobs" --max-replace-args "$args" -- \
 			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
 	sleep "${delay}"
 
-	message "Batch $batch finished: " \
+	logmsg "Batch $batch finished: " \
 		"$(benchmark $batchstart $((endpage - page + 1)))"
 
 	# archive
@@ -334,5 +354,5 @@ done
 message "Waiting for pending tasks..."
 wait
 
-message "Done!"
+logmsg "Done!"
 message "Next page: $((page))"
