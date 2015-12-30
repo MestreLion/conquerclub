@@ -132,6 +132,7 @@ logger() {
 
 logmsg() { logger "$@"; message "$@"; }
 
+
 # Main functions --------------------------------------------------------------
 
 usage() {
@@ -332,11 +333,8 @@ for batch in $(seq 1 "$batches"); do
 	fi
 
 	# Calculate end page
-	endpage=$((page + ppb - 1))
-
-	if ((endpage > pages)); then
-		endpage=$pages
-	fi
+	endpage=$(min "$pages" \
+		$(min $((page + ppb - 1)) $(ceilnear "$page" "$ppb")))
 
 	logmsg "Starting batch $batch of $batches, pages $page to $endpage"
 	batchstart=$(date +%s)
