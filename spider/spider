@@ -43,7 +43,7 @@ logging=1
 myname=${0##*/}
 mydir=$(dirname "$(readlink -f "$0")")
 
-urlmain="http://www.conquerclub.com/"
+urlmain="http://www.conquerclub.com"
 
 
 # Generic helper functions ----------------------------------------------------
@@ -373,18 +373,30 @@ for batch in $(seq 1 "$batches"); do
 	# TODO: verify page
 
 	# move to workdir/mode/pages/999
-	mkdir -p -- "$pagedir"/"$dirname"
+	pagedirname="$pagedir"/"$dirname"
+	pagefilepref="$pagedirname"/"$mode"-page
+	mkdir -p -- "$pagedirname"
 	for pagefile in "$dirname"/"$(basename "$urlapi")"*; do
-		mv "$pagefile" \
-			"$pagedir"/"$dirname"/"$mode"-page-"${pagefile##*=}".xml
+		mv "$pagefile" "$pagefilepref"-"${pagefile##*=}".xml
 	done
 	rmdir --ignore-fail-on-non-empty -- "$dirname"
 
 	# archive
-	if [[ $(ls -A1 "$pagedir"/"$dirname"/*.xml | wc -l) == "$ppb" ]]; then
-		cd "$pagedir"/"$dirname"
+	if ((endpage == pages)) ||
+		[[ $(ls -A1 "$pagedirname"/*.xml | wc -l) == "$ppb" ]]
+	then
+		cd "$pagedirname"
 		7z a "$workdir"/"$tag" -- *.xml >/dev/null &  # 7z is too chatty!
 		cd - >/dev/null
+	else
+		# find missing
+		for pagenum in $(seq "$ppb"); do
+			abspage=$(( 10#$dirname * ppb + pagenum ))  # damn octal!
+			wgetcmd=(wget -P "$dirname" -- "${urlapi}${abspage}")
+			if ! [[ -f "$pagefilepref"-"$abspage".xml ]]; then
+				logger "still missing: $dirname	$abspage	${wgetcmd[@]}"
+			fi
+		done
 	fi
 
 	# get ready for next batch
