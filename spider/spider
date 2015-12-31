@@ -357,7 +357,13 @@ for batch in $(seq 1 "$batches"); do
 	logmsg "Batch $batch finished: " \
 		"$(benchmark $batchstart $((endpage - page + 1)))"
 
-	# TODO: verify, rename, move, archive
+	# verify log
+	if ((logging)) && grep -qP '\t0\t0\t[^0E][0-9]*\t0\t' "$tag".log; then
+		warning "Download errors found, check the master log!"
+		logger "Download errors found, retry commands saved to repair file"
+		awk -F'\t' 'NR==1{next} $7 !~ 0 {print $9}' \
+			"$tag".log >> "${logfile%.*}".retry.log
+	fi
 
 	# archive
 	cd "$dirname"
