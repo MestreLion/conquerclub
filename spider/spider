@@ -30,6 +30,7 @@ jobs=20
 args=10
 delay=2.0
 ppb=1000
+ppp=1000  # players per page
 
 workdir='.'
 
@@ -262,6 +263,20 @@ tournamentlist)
 	urlapi="$urlmain/api.php?mode=tournamentlist&names=Y&page="
 	pages=267  # total number of pages
 ;;
+player)
+	urlapi="$urlmain/api.php?mode=player&u="
+	players=745839  # max player ID, not all IDs are valid (724742 valid)
+	# list=$(seq -s, $((players - ppp)) "$players")
+	# server limit: 8191 chars, 'GET /api.php?...745838,745839 HTTP/1.1'
+	# 8191-37+1[last comma]/(6+1[id length+comma]) = 1165 players exactly
+	# 1019 when id gets to 7 digits (soon). 1000 is safe for the foreseable
+	# future
+	pages=$(($(ceilnear "$players" "$ppp") / ppp))
+
+	# avoid "filename too long" wget bug. fixed in wget 1.15 (ubuntu 14.04+)
+	# see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=672131
+	args=1
+;;
 *)
 	fatal "unknown mode: $mode"
 ;;
@@ -347,11 +362,25 @@ for batch in $(seq 1 "$batches"); do
 		parallelbatchargs+=(--joblog "$tag".log)
 	fi
 
+	# download pages
 	mkdir -p -- "$dirname"
-	seq "$page" "$endpage" |
-	parallel "${parallelbatchargs[@]}" \
-		--jobs "$jobs" --max-replace-args "$args" -- \
-			wget -qN -P "'$dirname'" -- "'${urlapi}{}'"
+	if [[ "$mode" == "player" ]]; then
+		for playerpage in $(seq "$page" "$endpage"); do
+			player=$((ppp * (playerpage - 1) + 1))
+			endplayer=$(min "$players" $((player + ppp - 1)))
+			echo "$playerpage"
+			seq -s',' "$player" "$endplayer"
+		done |
+		parallel "${parallelbatchargs[@]}" \
+			--jobs "$jobs" --max-replace-args 2 -- \
+				wget -q -O "'${dirname}/${urlapi##*/}{1}'" \
+					-- "'${urlapi}{2}'"
+	else
+		seq "$page" "$endpage" |
+		parallel "${parallelbatchargs[@]}" \
+			--jobs "$jobs" --max-replace-args "$args" -- \
+				wget -qN -P "'$dirname'" -- "'${urlapi}{}'"
+	fi
 	sleep "${delay}"
 
 	logmsg "Batch $batch finished: " \
