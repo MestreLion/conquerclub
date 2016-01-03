@@ -370,7 +370,14 @@ for batch in $(seq 1 "$batches"); do
 		fi
 	fi
 
-	# TODO: verify page
+	# verify pages
+	for pagefile in "$dirname"/"$(basename "$urlapi")"*; do
+		tail -n 1 "$pagefile" | grep -q '</api>' ||
+		{
+			warning "Bad file found: $pagefile"
+			logger "bad file: $pagefile"
+		}
+	done
 
 	# move to workdir/mode/pages/999
 	pagedirname="$pagedir"/"$dirname"
