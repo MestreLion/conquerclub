@@ -351,7 +351,7 @@ for batch in $(seq 1 "$batches"); do
 	seq "$page" "$endpage" |
 	parallel "${parallelbatchargs[@]}" \
 		--jobs "$jobs" --max-replace-args "$args" -- \
-			wget -q -P "'$dirname'" -- "'${urlapi}{}'"
+			wget -qN -P "'$dirname'" -- "'${urlapi}{}'"
 	sleep "${delay}"
 
 	logmsg "Batch $batch finished: " \
@@ -392,7 +392,7 @@ for batch in $(seq 1 "$batches"); do
 		# find missing
 		for pagenum in $(seq "$ppb"); do
 			abspage=$(( 10#$dirname * ppb + pagenum ))  # damn octal!
-			wgetcmd=(wget -P "$dirname" -- "${urlapi}${abspage}")
+			wgetcmd=(wget -NP "$dirname" -- "${urlapi}${abspage}")
 			if ! [[ -f "$pagefilepref"-"$abspage".xml ]]; then
 				logger "still missing: $dirname	$abspage	${wgetcmd[@]}"
 			fi
