@@ -264,8 +264,14 @@ tournamentlist)
 	pages=267  # total number of pages
 ;;
 player)
+	# max known player ID, but not all IDs are valid (724742 valid)
+	players=$(
+		wget -qO- "$urlmain"/forum |
+		awk -F"&amp;(u=)?" \
+			'/&bull; Our newest member <strong><a[^>]+>/{print $2}'
+	)
+
 	urlapi="$urlmain/api.php?mode=player&u="
-	players=745839  # max player ID, not all IDs are valid (724742 valid)
 	# list=$(seq -s, $((players - ppp)) "$players")
 	# server limit: 8191 chars, 'GET /api.php?...745838,745839 HTTP/1.1'
 	# 8191-37+1[last comma]/(6+1[id length+comma]) = 1165 players exactly
