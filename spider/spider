@@ -256,6 +256,12 @@ if ((ppb <= 0)); then argerr "pages per batch must be greater than 0"; fi
 
 case "$mode" in
 gamelist)
+	# max known game ID (rough estimative, needs a better source)
+	maxgame=(
+		wget -qO- "$urlmain/public.php?mode=feauturedtournamentgames" |
+		egrep -o '&game=[0-9]+' |
+		cut -d= -f2
+	)
 	urlapi="$urlmain/api.php?mode=gamelist&events=Y&names=Y&page="
 	pages=68720  # total number of pages
 ;;
