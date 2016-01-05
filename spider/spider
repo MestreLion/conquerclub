@@ -346,7 +346,11 @@ if ((verbose)); then
 	logmsg "	Job delay:         $delay"
 	logmsg "	Pages per job:     $args"
 	logmsg "	Pages per batch:   $ppb"
-	logmsg "	Download dir:      $curdir"
+	logmsg "	Total pages:       $pages"
+	if [[ "$mode" == "player" ]]; then
+	logmsg "	Total players:     $players"
+	fi
+	logmsg "	Download dir:      $outdir"
 fi
 
 mkdir -p -- "$workdir" "$outdir" "$pagedir" "$curdir" &&
