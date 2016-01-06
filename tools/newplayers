@@ -1,0 +1,497 @@
+#!/bin/bash
+#
+# newplayers - Email new players in ConquerClub since last run
+#
+#    Copyright (C) 2016 Rodrigo Silva (MestreLion) <conquerclub@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
+
+# Default options -------------------------------------------------------------
+
+args=1
+jobs=20
+delay=2.0
+maxfetch=300
+
+emailrecipients=""
+
+verbose=0
+debug=0
+yes=0
+logging=1
+reset=0
+purge=0
+
+
+# Environment setup -----------------------------------------------------------
+
+# Gnome Scheduler sets POSIXLY_CORRECT=enabled, which breaks bash process
+# substitution "<(cmd)" used in for while / read loops
+unset POSIXLY_CORRECT
+set +o posix
+
+# {ana,}cron runs with minimal enviroment, restricting PATH needed for sendmail
+if [[ -f "$HOME"/.profile ]]; then
+	source "$HOME"/.profile
+fi
+
+
+# Constants and other globals - DO NOT CHANGE! --------------------------------
+
+myname=${0##*/}
+mydir=$(dirname "$(readlink -f "$0")")
+myproject=conquerclub
+
+urlcc=http://www.conquerclub.com
+urlmaxid="$urlcc"/forum/
+urlapi="$urlcc"/api.php"?mode=player&u="
+urlprofile="${urlcc/http:/https:}"/forum/memberlist.php"?mode=viewprofile&u="
+
+datadir=${XDG_CONFIG_HOME:-"$HOME"/.config}/"$myproject"/"$myname"
+cachedir=${XDG_CACHE_HOME:-"$HOME"/.cache}/"$myproject"
+
+emailtemplate="$datadir"/email-template.txt
+recipientsfile="$datadir"/email-recipients
+
+emailsender="$myproject@rodrigosilva.com"
+if [[ -f "$recipientsfile" ]]; then
+	emailrecipients=$(<"$recipientsfile")
+fi
+saverecipients=0
+
+lastidfile="$datadir"/lastid
+logfile="$cachedir"/"$myname".log
+
+# Records per request
+# A request is a single HTTP GET with comma-separated IDs in the querystring
+# CC's webserver limit: 8191 chars, 'GET /api.php?...745838,745839 HTTP/1.1'
+# 8191-37+1[last comma]/(6+1[ID length+comma]) = 1165 players exactly, 1019 when
+# player ID gets to 7 digits (soon). So 1000 is safe for the foreseable future
+rpr=1000
+
+
+# Generic helper functions ----------------------------------------------------
+
+bold()    { if [[ "$TERM" ]]; then tput bold; fi; printf '%s' "$@"
+            if [[ "$TERM" ]]; then tput sgr0; fi; }
+red()     { if [[ "$TERM" ]]; then tput setaf 1; fi; bold "$@"; }
+green()   { if [[ "$TERM" ]]; then tput setaf 2; fi; bold "$@"; }
+
+fatal()   { if (($#)); then logger FATAL "$@"; echo "$(red '* ' "$@")" >&2; fi;
+            exit 1; }
+outp()    { if ((verbose)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; }
+header()  { outp "$(green "* " "$@")"; }
+warning() { outp "$(red "* " "$@")"; logger WARN "$@"; }
+message() { outp "* $@"; logger INFO "$@"; }
+debug()   { if !((debug)); then return; fi; outp "* " "$@"; logger DEBUG "$@"; }
+
+argerr()  { echo $(red "* ${1:-error}") >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
+integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
+            argerr "'$1'${2:+ in $2} is not an integer."; }
+numeric() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$'
+            [[ "$1" =~ $re ]] || argerr "'${1:-}'${2:+ in $2} is not a number."; }
+curtime() { date --rfc-3339=seconds${1:+ --date @"$1"}; }
+exists()  { type "$@" >/dev/null 2>&1; }
+min()     { if (( "$1" < "$2" )); then echo "$1"; else echo "$2"; fi; }
+max()     { if (( "$1" > "$2" )); then echo "$1"; else echo "$2"; fi; }
+
+confirm()
+{
+	local msg=$(bold "${@:-"Confirm?"}")
+	local default=$(bold "NO")
+	local reply
+
+	if ! ((yes)); then
+		read -p "* $msg (y/n, default $default): " reply
+		reply="${reply:-$default}"
+		case "$reply" in
+			[Yy]*) ;;
+			*) message "Canceled"; exit 1;;
+		esac
+	fi
+}
+
+require() {
+	local cmd="$1"
+	shift
+	local packages="${@:-$cmd}"
+	local reqmsg="$myname requires '$cmd'"
+
+	if exists "$cmd"; then return; fi
+
+	exists apt-get || fatal "$reqmsg, please install it and try again."
+	confirm "$reqmsg, want to install packages?" \
+		" (need administrator priviledges)"
+	message "Installing package ${packages[@]}"
+	sudo apt-get install -y "${packages[@]}" ||
+		fatal "Error installing packages (did you cancel it?)"
+}
+
+logger() {
+	if !((logging)); then return; fi
+	local level=$1
+	shift
+	if [[ "${logfile:-}" ]]; then
+		echo "$(curtime) $level	$@" >> "$logfile"
+	fi
+}
+
+savelast() {
+	debug "saving last player $1 - $2 to $3"
+	printf "%d\t%s\t%s\n" "$1" "$2" "$(date +%s)" > "$3";
+}
+
+
+# Main functions --------------------------------------------------------------
+
+usage() {
+	cat <<-USAGE
+	Usage: $myname [options]
+	USAGE
+	if [[ "${1:-}" ]] ; then
+		cat >&2 <<- USAGE
+		Try '$myname --help' for more information.
+		USAGE
+		exit 1
+	fi
+	cat <<-USAGE
+
+	Email new ConquerClub players since last run
+
+	General options:
+	  -h|--help  - show this page
+	  -y|--yes   - automatically answer "yes" to all questions
+
+	Output options:
+	  -v|--verbose
+	            output informative messages to console (stderr) in addition
+	            to the log file. As this program is suitable as a cron job,
+	            by default it only outputs to the log file.
+
+	  -d|--debug
+	            output more details to the log file and, if --verbose is
+	            enabled, to stderr as well.
+
+	  --no-log
+	            do not create or output to the log file, located by default
+	            at $logfile
+
+	Fetching options:
+	  --max-fetch NUM
+	            maximum number of new players to fetch, counting from the
+	            most recent player found. If there are more than NUM new
+	            players since last the run, the older ones will be ignored.
+	            [default: $maxfetch]
+
+	  --jobs NUM
+	             how many simultaneous fetching jobs to run in parallel.
+	             If your parallel version does not support job delay, jobs
+	             are limited to a maximum of 10 (see --delay).
+	             [default: $jobs]
+
+	  --delay NUM
+	             delay between starting new simultaneous jobs, in seconds.
+	             Prevents overloading the server with too many simultaneous
+	             requests. The deault is adequate for the "maximum of 5
+	             requests per 10 seconds" API policy. Requires parallel
+	             version 20121222+. Fractional numbers are accepted.
+	             [default: $delay]
+
+	Email options:
+	  --recipients EMAIL[,EMAIL...]
+	            recipients for the email, comma-separated. Only required to
+	            be set up once, as it saves the recipients for future use at
+	            $recipientsfile
+
+	  By default emails are sent from $emailsender, and this
+	  can be changed on the email template created on first run at
+	  $emailtemplate
+
+	Configuration options:
+	  --reset
+	            resets all information about the previous run, such as the
+	            most recent player. Can be used to force fetching older
+	            players. In practice, it deletes the lastid file located at
+	            $lastidfile
+
+	  --purge
+	            deletes all configuration, such as email recipients list,
+	            email template and previous run data. Essentially resets
+	            $myname to the state of the first run. Config files are at
+	            $datadir
+
+	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+	USAGE
+	exit 0
+}
+
+
+# Command-line arguments ------------------------------------------------------
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	--max-fetch=*   ) maxfetch=${1#*=}        ;;
+	--jobs=*        ) jobs=${1#*=}            ;;
+	--args=*        ) args=${1#*=}            ;;
+	--delay=*       ) delay=${1#*=}           ;;
+	--recipients=*  ) emailrecipients=${1#*=}
+	                  saverecipients=1        ;;
+
+	--max-fetch     ) shift ; maxfetch=${1:-} ;;
+	--jobs          ) shift ; jobs=${1:-}     ;;
+	--args          ) shift ; args=${1:-}     ;;
+	--delay         ) shift ; delay=${1:-}    ;;
+	--recipients    ) shift ; emailrecipients=${1:-}
+	                  saverecipients=1        ;;
+
+	-v|--verbose    ) verbose=1               ;;
+	-d|--debug      ) debug=1                 ;;
+	-y|--yes        ) yes=1                   ;;
+	--no-log        ) logging=0               ;;
+	--reset         ) reset=1                 ;;
+	--purge         ) purge=1                 ;;
+
+	*               ) invalid "$1"            ;;
+	esac
+	shift
+done
+
+integer "$jobs"    "--jobs"
+integer "$args"    "--args"
+numeric "$delay"   "--delay"
+
+if ((reset)); then
+	message "Reseting last player info..."
+	rm -f -- "$lastidfile"
+	if [[ -d "$datadir" ]]; then
+		rmdir --ignore-fail-on-non-empty --parents -- "$datadir"
+	fi
+	exit
+fi
+
+if ((purge)); then
+	message "Purging all settings and logs..."
+	rm -rf -- "$datadir" "$logfile"
+	if [[ -d "$cachedir" ]]; then
+		rmdir --ignore-fail-on-non-empty --parents -- "$cachedir"
+	fi
+	if [[ -d "$datadir"/.. ]]; then
+		rmdir --ignore-fail-on-non-empty --parents -- "$datadir"/..
+	fi
+	exit
+fi
+
+if [[ -z "$emailrecipients" ]]; then
+	fatal "No email recipients!" \
+		" Set them up once using --recipients and try again"
+fi
+
+
+# Requirements ----------------------------------------------------------------
+
+require parallel parallel
+require sendmail ssmtp
+
+
+# Parallel set-up -------------------------------------------------------------
+
+parallelargs=(--gnu)
+
+# Setup delay, only available in recent verions of parallel (20121222 onwards)
+if echo | parallel --delay "$delay" >/dev/null 2>&1; then
+	parallelargs+=(--delay "$delay")
+else
+	warning "Your 'parallel' version does not suport job delay." \
+		" Limiting jobs to 10"
+	jobs=$(max "$jobs" 10)
+fi
+
+# If running a recent version of parallel that contains the BibTeX notice,
+# and it's not silenced yet, display the notice once so the user can silence it,
+# as per parallel's author request.
+# Adding --no-notice also works, but it's rude. Let's support the author!
+if echo | parallel --no-notice >/dev/null 2>&1 &&
+	! [[ -f "$HOME"/.parallel/will-cite ]]
+then
+	parallel --bibtex
+fi
+
+if ((verbose)); then
+	parallelargs+=(--progress)
+fi
+
+
+# Main logic and procedures ---------------------------------------------------
+
+mkdir -p -- "$datadir" "$(dirname "$logfile")" ||
+	fatal "could not create directories"
+
+header "Starting $myname"
+debug "	Fetching at most:    $maxfetch players"
+debug "	Players per request: $rpr"
+debug "	Simultaneous jobs:   $jobs"
+debug "	Job delay:           $delay"
+debug "	Log file:            $logfile"
+debug "	Last ID file:        $lastidfile"
+
+if ((saverecipients)); then
+	message "Saving email recipients to $recipientsfile"
+	echo "$emailrecipients" > "$recipientsfile"
+fi
+
+if ! [[ -f "$emailtemplate" ]]; then
+	message "Creating email template at $emailtemplate"
+	cat > "$emailtemplate" <<-EOF
+		From: $emailsender
+		To: %%RECIPIENTS%%
+		Subject: New players in ConquerClub
+
+		These players have joined ConquerClub%%SINCE%%:
+
+		%%PLAYERS%%
+
+		Yours truly,
+		MestreLion's amazing ConquerClub tools
+	EOF
+fi
+
+# max known player ID, but not all IDs are valid (724742 valid 724846)
+header "Fetching most recent player from ConquerClub"
+IFS=$'\t' read -r maxid maxname maxplayers _ < <(
+	wget -qO- "$urlmaxid" |
+	awk -F "&amp;(u=)?(sid[^>]*>)?|</a>|(</strong>)?[^<]*<strong>" '
+		BEGIN {OFS="\t"}
+		/&bull; Our newest member <strong><a[^>]+>/{print $6, $7, $4}' ||
+		fatal "could not fetch most recent player"
+)
+debug "Most recent player: $maxname, ID $maxid." \
+	" Total players: $maxplayers ($((100 * maxplayers / maxid))%)"
+
+debug "Reading last run info from $lastidfile"
+if [[ -f "$lastidfile" ]]; then
+	IFS=$'\t' read -r lastid lastname lastdate < "$lastidfile"
+	since=" since $(curtime "$lastdate")"
+	debug "Last run: player '$lastname', ID $lastid," \
+		" on $lastdate ($(curtime "$lastdate"))"
+else
+	lastid=0
+	lastname=""
+	lastdate=0
+	since=""
+	debug "First run"
+fi
+
+if ((maxid <= lastid)); then
+	savelast "$maxid" "$maxname" "$lastidfile"
+	header "No new players since last run on $(curtime "$lastdate"), exiting..."
+	logger INFO "No new players"
+	exit
+fi
+
+# prepare for the fist loop iteration
+reqlastid=$(max "$lastid" $((maxid - maxfetch)))
+
+# for statistics only
+fromid=$((reqlastid + 1))
+ids=$((maxid - fromid + 1))
+
+message "$ids new players, from ${fromid} to ${maxid} ($maxname)"
+
+if ((reqlastid > lastid)); then
+	message "$((reqlastid - lastid)) new IDs are too old and will be" \
+		" ignored. Increase --max-fetch or run this more frequently"
+fi
+
+while IFS=$'\t' read userid name country; do
+	if [[ "$name" ]]; then
+		echo "$name"
+		if [[ "$country" ]]; then echo "$country"; fi
+		echo "${urlprofile}${userid}"
+		echo
+	else
+		# last line - userid is actually statistics
+		debug "$userid"
+		echo "$userid"
+		echo
+		echo "IDs fetched from $fromid to $maxid"
+		if ((fromid > lastid + 1)); then
+			echo "Ignored $((fromid-lastid-1)) IDs from " \
+				"$((lastid+1)) to $((fromid-1))"
+		fi
+		header "Sending email"
+	fi
+done < <(
+	while reqfirstid=$((reqlastid + 1)) && ((reqfirstid <= maxid)); do
+		reqlastid=$(min "$maxid" $((reqfirstid + rpr - 1)))
+		header "Fetching players from $reqfirstid to $reqlastid"
+		seq -s',' "$reqfirstid" "$reqlastid" |
+		parallel "${parallelargs[@]}" \
+			--jobs "$jobs" --max-replace-args "$args" -- \
+				wget -qO- -- "'${urlapi}{}'" || {
+					fatal "error downloading players"
+				}
+		sleep "${delay}"
+	done |
+	awk -v ids="$ids" '
+		BEGIN {
+			s="[ \t\r\n]"
+			OFS="\t"
+			RS=s"*(</player>)?"s"*<player>"s"*<userid>"
+			FS=s"*</[^>]+>"s"*<[^>]+>"s"*"
+		}
+
+		NR == 1 {next}
+
+		{
+			print $1, $2, $9
+		}
+
+		END {
+			printf("%d new players out of %d IDs (%.1f%%)\n",
+				NR-1, ids, 100.0 * (NR-1) / ids)
+		}
+	'
+) |
+# Build the email
+awk -v recipients="$emailrecipients" -v since="$since" '
+	function printstdin() {
+		while(getline < "/dev/stdin")
+			print
+	}
+	/%%PLAYERS%%/ {
+		printstdin()
+		printed=1
+		next
+	}
+	{
+		sub("%%RECIPIENTS%%", recipients)
+		sub("%%SINCE%%", since)
+		print
+	}
+	END {
+		if (!printed)
+			printstdin()
+	}
+' "$emailtemplate" |
+# Send the email
+sendmail "$emailrecipients" ||
+	fatal "Error sending email"
+
+savelast "$maxid" "$maxname" "$lastidfile"
+
+header "Done!"
