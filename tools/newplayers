@@ -83,10 +83,10 @@ rpr=1000
 
 # Generic helper functions ----------------------------------------------------
 
-bold()    { if [[ "$TERM" ]]; then tput bold; fi; printf '%s' "$@"
-            if [[ "$TERM" ]]; then tput sgr0; fi; }
-red()     { if [[ "$TERM" ]]; then tput setaf 1; fi; bold "$@"; }
-green()   { if [[ "$TERM" ]]; then tput setaf 2; fi; bold "$@"; }
+bold()    { if ! [[ "$TERM" = dumb ]]; then tput bold; fi; printf '%s' "$@"
+            if ! [[ "$TERM" = dumb ]]; then tput sgr0; fi; }
+red()     { if ! [[ "$TERM" = dumb ]]; then tput setaf 1; fi; bold "$@"; }
+green()   { if ! [[ "$TERM" = dumb ]]; then tput setaf 2; fi; bold "$@"; }
 
 fatal()   { if (($#)); then logger FATAL "$@"; echo "$(red '* ' "$@")" >&2; fi;
             exit 1; }
