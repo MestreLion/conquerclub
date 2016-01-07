@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# player - Statistics on ConquerClub API XML library
+#
+#    Copyright (C) 2016 Rodrigo Silva (MestreLion) <conquerclub@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
+
+# Requires `topuniq` utility, available at http://github.com/MestreLion/topuniq
+
+mydir=$(dirname "$(readlink -f "$0")")
+gamedirs=("${@:-"$mydir"/data/player/pages/000}")
+
+# *VERY* expensive! As much as 10 times more than all fields *combined*!
+if false; then
+	echo "# Fields"
+	egrep -roh '<[^/ ]+>' "${gamedirs[@]}" | topuniq
+fi
+
+fields=(
+	membership
+	rank
+	rating
+	country
+	score
+	attendance
+	medals
+	games_won
+	games_completed
+)
+
+declare -A params
+params[score]="--top=100"
+params[games_won]="--top=100"
+params[games_completed]="--top=100"
+
+for field in "${fields[@]}"; do
+	if [[ "${params[$field]}" ]]; then
+		param=("${params[$field]}")
+	else
+		param=()
+	fi
+	echo
+	echo "# $field"
+	egrep -roh "$field>[^<]+" "${gamedirs[@]}" |
+	cut -d'>' -f 2 |
+	topuniq "${param[@]}"
+done
+
+lenghts=(
+	username
+	country
+	rank
+)
+
+for field in "${lenghts[@]}"; do
+	echo
+	echo "# $field maximum length"
+	egrep -roh "<$field[^>]*>[^<]+" "${gamedirs[@]}" |
+	cut -d'>' -f 2 |
+	awk '{s=length($0);if(s>m){m=s;l=$0}}END{print m "\t" l}'  # wc -L
+done
