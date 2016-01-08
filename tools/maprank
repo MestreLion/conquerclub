@@ -113,40 +113,22 @@ list_page() {
 		pages  = 0
 		wins   = 0
 		games  = 0
-		perc   = 0
 		name   = player
 
 		if (!page)
 			page = 0
 	}
 
-	# Regular records (no attribute): 2 fields
-	# $1 - tag: "map", "round", "war_fog"
-	# $2 - text
-
-	# Extended records (1 attribute): 3 fields
-	# $1 - tag with attribute name: "player state", "games total"
-	# $2 - attribute value
-	# $3 - text
-
-	# Containers (opening, closing, one-liner): 1 field
-	# $1 - tag: "players", "/players", "events /", "<api" (1st record only)
-
-	# Not really needed, logic could be on map
-	!ingame && $1 == "game_number" {
-		id = $2
+	!ingame && $1 == "map" {
 		ingame = 1
-		next
-	}
-
-	ingame && $1 == "map" {
 		map = $2
 		next
 	}
 
 	ingame && $1 == "player state" && ($3==name || tolower($3)==player) {
 		name = $3
-		if (!games) print page, pages, total, name > "/dev/stderr"
+		if (!games)
+			print page, pages, total, name > "/dev/stderr"
 		games++
 		if ($2 == "Won") {
 			win = 1
@@ -154,7 +136,7 @@ list_page() {
 		}
 		else
 			win = 0
-		print id, win, map
+		print win, map
 		ingame = 0
 		next
 	}
@@ -166,20 +148,14 @@ list_page() {
 		next
 	}
 
-	# Not needed
 	$1 == "games total" {
 		total = $2
-#		print page, pages, total > "/dev/stderr"
 		next
 	}
 
 	END {
-		if (page >= pages) {
-			if(games)
-				perc = sprintf("%5.1f", 100.0 * wins / games)
-#			print perc, wins, games, total > "/dev/stderr"
+		if (page >= pages)
 			exit 1
-		}
 	}'
 }
 
@@ -229,16 +205,17 @@ BEGIN {
 	CONVFMT = "%04d"
 }
 {
-	id=$1
-	win=$2
-	map=$3
+	win=$1
+	map=$2
 	sub(/ \(Random)$/, "", map)
 	games[map]++
-	if (win) wins[map]++
+	if (win)
+		wins[map]++
 }
 END {
 	for (map in games) {
-		if (! (map in wins)) wins[map] = 0
+		if (! (map in wins))
+			wins[map] = 0
 		perc = sprintf("%5.1f", 100.0 * wins[map] / games[map])
 		print perc, wins[map], games[map], map
 	}
