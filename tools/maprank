@@ -19,7 +19,7 @@
 
 # Default options -------------------------------------------------------------
 
-player=mestrelion
+player=""
 type=""
 
 delay=2.0
@@ -37,7 +37,6 @@ urlapi="$urlcc"/api.php"?mode=gamelist"
 
 bold()    { if ! [[ "$TERM" = dumb ]]; then tput bold; fi; printf '%s' "$@"
             if ! [[ "$TERM" = dumb ]]; then tput sgr0; fi; }
-red()     { if ! [[ "$TERM" = dumb ]]; then tput setaf 1; fi; bold "$@"; }
 green()   { if ! [[ "$TERM" = dumb ]]; then tput setaf 2; fi; bold "$@"; }
 
 fatal()   { if (($#)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; exit 1; }
@@ -75,7 +74,7 @@ usage() {
 
 	Game search options
 	  --player NAME
-	             Player to maprank. Required.
+	             Player to maprank, case-insensitive. Required.
 
 	  --game-type TYPE[,TYPE...]
 	              Game type(s), comma-separated (no spaces). Types are:
@@ -102,7 +101,6 @@ usage() {
 list_page() {
 	local page=$1
 	local url="${urlsearch}&page=$page"
-#	echo "$url" >&2
 	wget -qO- -- "$url" |
 	awk -v player="${player,,}" -v page="$page" '
 	BEGIN {
@@ -219,25 +217,6 @@ urlsearch="${urlapi}&names=Y&gs=F&p1un=${player}"
 if [[ "$type" ]]; then
 	urlsearch+="&ty=$type"
 fi
-
-# Previous idea: 1 awk to get headers, pipe to main awk
-#awk '
-#BEGIN {
-#	s="[ \t\r\n]"
-#	OFS="\t"
-#	FS=s"*</?[^>\"]+>"s"*| of |\""
-#}
-##ok || $0 ~ /<game>/ {print; next}
-#/<page>/{
-#	page = $2
-#	total = $3
-#}
-#/<games/ {
-#	games = $2
-#	print page, total, games > "/dev/stderr"
-#	ok=1
-#}
-
 
 page=1
 while list_page "$page"; do
