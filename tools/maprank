@@ -1,0 +1,286 @@
+#!/bin/bash -ue
+#
+# maprank - Show wins and games played per map for a ConquerClub player
+#
+#    Copyright (C) 2016 Rodrigo Silva (MestreLion) <conquerclub@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
+
+# Default options -------------------------------------------------------------
+
+player=mestrelion
+type=""
+
+delay=2.0
+verbose=1
+
+
+# Constants and other globals - DO NOT CHANGE! --------------------------------
+
+myname=${0##*/}
+urlcc=http://www.conquerclub.com
+urlapi="$urlcc"/api.php"?mode=gamelist"
+
+
+# Generic helper functions ----------------------------------------------------
+
+bold()    { if ! [[ "$TERM" = dumb ]]; then tput bold; fi; printf '%s' "$@"
+            if ! [[ "$TERM" = dumb ]]; then tput sgr0; fi; }
+red()     { if ! [[ "$TERM" = dumb ]]; then tput setaf 1; fi; bold "$@"; }
+green()   { if ! [[ "$TERM" = dumb ]]; then tput setaf 2; fi; bold "$@"; }
+
+fatal()   { if (($#)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; exit 1; }
+message() { if ((verbose)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; }
+header()  { if ((verbose)); then echo "$(green "* " "$@")" >&2; fi; }
+
+argerr()  { echo ${1:-error} >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
+integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
+            argerr "'$1'${2:+ in $2} is not an integer."; }
+numeric() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$'
+            [[ "$1" =~ $re ]] || argerr "'${1:-}'${2:+ in $2} is not a number."; }
+
+
+# Main functions --------------------------------------------------------------
+
+usage() {
+	cat <<-USAGE
+	Usage: $myname [options]
+	USAGE
+	if [[ "${1:-}" ]] ; then
+		cat >&2 <<- USAGE
+		Try '$myname --help' for more information.
+		USAGE
+		exit 1
+	fi
+	cat <<-USAGE
+
+	List wins and games played per map for a ConquerClub player
+
+	General options:
+	  -h|--help     - Show this page
+	  -v|--verbose  - Output more information
+
+	Game search options
+	  --player NAME
+	             Player to maprank. Required.
+
+	  --game-type TYPE[,TYPE...]
+	              Game type(s), comma-separated (no spaces). Types are:
+	              (S)tandard, (C) Terminator, (A)ssassin, (P)olymorphic,
+	              (D)oubles, (T)riples, (Q)uadruples
+
+	  --team
+	              Alias for '--game-type D,T,Q,P'
+
+	Fetching options:
+	  --delay NUM
+	              Delay between requests, to prevent overloading the server.
+	              The default adheres to ConquerClub's "maximum of 5 requests
+	              per 10 seconds" API policy. Fractional numbers accepted.
+	              [default: $delay]
+
+	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+	USAGE
+	exit 0
+}
+
+
+list_page() {
+	local page=$1
+	local url="${urlsearch}&page=$page"
+#	echo "$url" >&2
+	wget -qO- -- "$url" |
+	awk -v player="${player,,}" -v page="$page" '
+	BEGIN {
+		ls="\n[ \t]*"
+		OFS="\t"
+		RS="(</[^>]+)?>" ls "<"
+		FS="=\"|\"?>?"
+
+		ingame = 0
+		pages  = 0
+		wins   = 0
+		games  = 0
+		perc   = 0
+		name   = player
+
+		if (!page)
+			page = 0
+	}
+
+	# Regular records (no attribute): 2 fields
+	# $1 - tag: "map", "round", "war_fog"
+	# $2 - text
+
+	# Extended records (1 attribute): 3 fields
+	# $1 - tag with attribute name: "player state", "games total"
+	# $2 - attribute value
+	# $3 - text
+
+	# Containers (opening, closing, one-liner): 1 field
+	# $1 - tag: "players", "/players", "events /", "<api" (1st record only)
+
+	# Not really needed, logic could be on map
+	!ingame && $1 == "game_number" {
+		id = $2
+		ingame = 1
+		next
+	}
+
+	ingame && $1 == "map" {
+		map = $2
+		next
+	}
+
+	ingame && $1 == "player state" && ($3==name || tolower($3)==player) {
+		name = $3
+		if (!games) print page, pages, total, name > "/dev/stderr"
+		games++
+		if ($2 == "Won") {
+			win = 1
+			wins++
+		}
+		else
+			win = 0
+		print id, win, map
+		ingame = 0
+		next
+	}
+
+	$1 == "page" {
+		split($2, apages, " of ")
+		page  = apages[1]
+		pages = apages[2]
+		next
+	}
+
+	# Not needed
+	$1 == "games total" {
+		total = $2
+#		print page, pages, total > "/dev/stderr"
+		next
+	}
+
+	END {
+		if (page >= pages) {
+			if(games)
+				perc = sprintf("%5.1f", 100.0 * wins / games)
+#			print perc, wins, games, total > "/dev/stderr"
+			exit 1
+		}
+	}'
+}
+
+
+# Command-line arguments ------------------------------------------------------
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	--delay=*       ) delay=${1#*=}           ;;
+	--player=*      ) player=${1#*=}          ;;
+	--game-type=*   ) type=${1#*=}            ;;
+
+	--delay         ) shift ; delay=${1:-}    ;;
+	--player        ) shift ; player=${1:-}   ;;
+	--game-type     ) shift ; type=${1:-}     ;;
+
+	-v|--verbose    ) verbose=1               ;;
+	--team          ) type="D,T,Q,P"          ;;
+
+	*               ) invalid "$1"            ;;
+	esac
+	shift
+done
+
+[[ "$player" ]] || missing "--player" "NAME"
+
+numeric "$delay"   "--delay"
+
+
+# Main logic and procedures ---------------------------------------------------
+
+urlsearch="${urlapi}&names=Y&gs=F&p1un=${player}"
+
+if [[ "$type" ]]; then
+	urlsearch+="&ty=$type"
+fi
+
+# Previous idea: 1 awk to get headers, pipe to main awk
+#awk '
+#BEGIN {
+#	s="[ \t\r\n]"
+#	OFS="\t"
+#	FS=s"*</?[^>\"]+>"s"*| of |\""
+#}
+##ok || $0 ~ /<game>/ {print; next}
+#/<page>/{
+#	page = $2
+#	total = $3
+#}
+#/<games/ {
+#	games = $2
+#	print page, total, games > "/dev/stderr"
+#	ok=1
+#}
+
+
+page=1
+while list_page "$page"; do
+	((page++))
+done |
+awk '
+BEGIN {
+	FS = "\t"
+	OFS = "\t"
+	CONVFMT = "%04d"
+}
+{
+	id=$1
+	win=$2
+	map=$3
+	sub(/ \(Random)$/, "", map)
+	games[map]++
+	if (win) wins[map]++
+}
+END {
+	for (map in games) {
+		if (! (map in wins)) wins[map] = 0
+		perc = sprintf("%5.1f", 100.0 * wins[map] / games[map])
+		print perc, wins[map], games[map], map
+	}
+}' |
+sort -nr |
+awk '
+BEGIN {
+	FS = "\t"
+	OFS = "\t"
+	wins  = 0
+	games = 0
+	perc  = 0
+	print "WIN%", "WINS", "GAMES", "MAP"
+}
+{
+	wins  += $2
+	games += $3
+	print
+}
+END {
+	if (games)
+		perc = sprintf("%5.1f", 100.0 * wins / games)
+	print perc, wins, games, "TOTAL"
+}'
