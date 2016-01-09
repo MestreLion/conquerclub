@@ -70,7 +70,9 @@ usage() {
 
 	General options:
 	  -h|--help     - Show this page
-	  -v|--verbose  - Output more information
+	  -q|--quiet    - Do not output progress messages, which are normally
+	                  made to stderr. $myname" will be completely silent
+	                  until the result is output to stdout.
 
 	Game search options
 	  --player NAME
@@ -173,7 +175,7 @@ while (( $# )); do
 	--player        ) shift ; player=${1:-}   ;;
 	--game-type     ) shift ; type=${1:-}     ;;
 
-	-v|--verbose    ) verbose=1               ;;
+	-q|--quiet      ) verbose=0               ;;
 	--team          ) type="D,T,Q,P"          ;;
 
 	*               ) invalid "$1"            ;;
@@ -195,7 +197,14 @@ if [[ "$type" ]]; then
 fi
 
 page=1
-while list_page "$page"; do
+while list_page "$page" 2> >(
+	read -r pg pgs gms pl
+	if ((page == 1)); then
+		header "$gms games found for player $pl"
+	fi
+	header "Reading page $pg of $pgs"
+)
+do
 	((page++))
 done |
 awk '
@@ -228,9 +237,10 @@ BEGIN {
 	wins  = 0
 	games = 0
 	perc  = 0
-	print "WIN%", "WINS", "GAMES", "MAP"
 }
 {
+	if (!games)
+		print "WIN%", "WINS", "GAMES", "MAP"
 	wins  += $2
 	games += $3
 	print
