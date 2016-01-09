@@ -21,6 +21,7 @@
 
 player=""
 type=""
+outfile=""
 
 delay=2.0
 verbose=1
@@ -68,11 +69,15 @@ usage() {
 
 	List wins and games played per map for a ConquerClub player
 
-	General options:
+	Display options:
 	  -h|--help     - Show this page
 	  -q|--quiet    - Do not output progress messages, which are normally
 	                  made to stderr. $myname" will be completely silent
-	                  until the result is output to stdout.
+	                  until the result is output to stdout (see --output)
+
+	  --outfile OUTFILE
+	             Output results to OUTFILE instead of stdout.
+	             Roughtly equivalent to '$myname > OUTFILE'
 
 	Game search options
 	  --player NAME
@@ -170,10 +175,12 @@ while (( $# )); do
 	--delay=*       ) delay=${1#*=}           ;;
 	--player=*      ) player=${1#*=}          ;;
 	--game-type=*   ) type=${1#*=}            ;;
+	--outfile=*     ) outfile=${1#*=}         ;;
 
 	--delay         ) shift ; delay=${1:-}    ;;
 	--player        ) shift ; player=${1:-}   ;;
 	--game-type     ) shift ; type=${1:-}     ;;
+	--outfile       ) shift ; outfile=${1:-}  ;;
 
 	-q|--quiet      ) verbose=0               ;;
 	--team          ) type="D,T,Q,P"          ;;
@@ -188,19 +195,27 @@ done
 numeric "$delay"   "--delay"
 
 
-# Main logic and procedures ---------------------------------------------------
-
 urlsearch="${urlapi}&names=Y&gs=F&p1un=${player}"
 
 if [[ "$type" ]]; then
 	urlsearch+="&ty=$type"
 fi
 
+if [[ "$outfile" ]]; then
+	exec > "$outfile"
+fi
+
+
+# Main logic and procedures ---------------------------------------------------
+
 page=1
 while list_page "$page" 2> >(
 	read -r pg pgs gms pl
 	if ((page == 1)); then
 		header "$gms games found for player $pl"
+		if [[ "$outfile" ]]; then
+			header "Saving results to $outfile"
+		fi
 	fi
 	header "Reading page $pg of $pgs"
 )
