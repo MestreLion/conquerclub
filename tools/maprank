@@ -51,6 +51,7 @@ integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
             argerr "'$1'${2:+ in $2} is not an integer."; }
 numeric() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; re='^[0-9]+([.][0-9]+)?$'
             [[ "$1" =~ $re ]] || argerr "'${1:-}'${2:+ in $2} is not a number."; }
+now()     { date +%s.%N; }
 
 
 # Main functions --------------------------------------------------------------
@@ -104,6 +105,22 @@ usage() {
 	exit 0
 }
 
+throttle() {
+	local delay=$1; shift
+	local cmd=("$@")
+
+	local start=$(now)
+	"${cmd[@]}"
+	local status=$?
+
+	local adjust=0.0075
+	local slp=$(awk -v s="$start" -v f=$(now) \
+			-v d="$delay" -v a="$adjust" '
+			BEGIN{slp=d-a-(f-s); if(slp<0) slp=0; print slp}')
+	sleep "$slp"
+
+	return "$status"
+}
 
 list_page() {
 	local page=$1
@@ -209,7 +226,7 @@ fi
 # Main logic and procedures ---------------------------------------------------
 
 page=1
-while list_page "$page" 2> >(
+while throttle "$delay" list_page "$page" 2> >(
 	read -r pg pgs gms pl
 	if ((page == 1)); then
 		header "$gms games found for player $pl"
