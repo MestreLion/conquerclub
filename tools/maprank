@@ -58,7 +58,7 @@ now()     { date +%s.%N; }
 
 usage() {
 	cat <<-USAGE
-	Usage: $myname [options]
+	Usage: $myname [options] PLAYERNAME
 	USAGE
 	if [[ "${1:-}" ]] ; then
 		cat >&2 <<- USAGE
@@ -81,9 +81,6 @@ usage() {
 	             Roughtly equivalent to '$myname > OUTFILE'
 
 	Game search options
-	  --player NAME
-	             Player to maprank, case-insensitive. Required.
-
 	  --game-type TYPE[,TYPE...]
 	              Game type(s), comma-separated (no spaces). Types are:
 	              (S)tandard, (C) Terminator, (A)ssassin, (P)olymorphic,
@@ -98,6 +95,10 @@ usage() {
 	              The default adheres to ConquerClub's "maximum of 5 requests
 	              per 10 seconds" API policy. Fractional numbers accepted.
 	              [default: $delay]
+
+	Required arguments:
+	  PLAYER
+	             Player name to maprank, case-insensitive.
 
 	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
 	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
@@ -190,27 +191,27 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	--delay=*       ) delay=${1#*=}           ;;
-	--player=*      ) player=${1#*=}          ;;
 	--game-type=*   ) type=${1#*=}            ;;
 	--outfile=*     ) outfile=${1#*=}         ;;
 
 	--delay         ) shift ; delay=${1:-}    ;;
-	--player        ) shift ; player=${1:-}   ;;
 	--game-type     ) shift ; type=${1:-}     ;;
 	--outfile       ) shift ; outfile=${1:-}  ;;
 
 	-q|--quiet      ) verbose=0               ;;
 	--team          ) type="D,T,Q,P"          ;;
 
-	*               ) invalid "$1"            ;;
+	--              ) shift ; player="${1:-}"
+	                  break                   ;;
+	-*              ) invalid "$1"            ;;
+	*               ) player="$1"             ;;
 	esac
 	shift
 done
 
-[[ "$player" ]] || missing "--player" "NAME"
+[[ "$player" ]] || missing "" "PLAYER"
 
 numeric "$delay"   "--delay"
-
 
 urlsearch="${urlapi}&names=Y&gs=F&p1un=${player}"
 
