@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ue
 #
 # clanplayerrank - Rank clan players in a League war in ConquerClub
 #
@@ -17,22 +17,95 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
 
+# Reference:
 # https://www.conquerclub.com/public.php?mode=showclans3&search_status=&search_clanleague=44&search_clan1=88
 
-mainurl=https://www.conquerclub.com
-searchurl="$mainurl"/public.php?mode=showclans3  # Clan Leagues
+
+# Default options -------------------------------------------------------------
 
 clan=${1:-88}  # THE PACK
 league=${2:-44}  # Clan League 7 - Second Division
 
+
+# Constants and other globals - DO NOT CHANGE! --------------------------------
+
+myname=${0##*/}
+urlcc=http://www.conquerclub.com
+urlsearch="$urlcc"/public.php?mode=showclans3  # Clan Leagues
+
+
+# Generic helper functions ----------------------------------------------------
+
+bold()    { if ! [[ "$TERM" = dumb ]]; then tput bold; fi; printf '%s' "$@"
+            if ! [[ "$TERM" = dumb ]]; then tput sgr0; fi; }
+green()   { if ! [[ "$TERM" = dumb ]]; then tput setaf 2; fi; bold "$@"; }
+
+fatal()   { if (($#)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; exit 1; }
+message() { if ((verbose)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; }
+header()  { if ((verbose)); then echo "$(green "* " "$@")" >&2; fi; }
+
+argerr()  { echo ${1:-error} >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
+integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
+            argerr "'$1'${2:+ in $2} is not an integer."; }
+
+
+# Main functions --------------------------------------------------------------
+
+usage() {
+	cat <<-USAGE
+	Usage: $myname [options]
+	USAGE
+	if [[ "${1:-}" ]] ; then
+		cat >&2 <<- USAGE
+		Try '$myname --help' for more information.
+		USAGE
+		exit 1
+	fi
+	cat <<-USAGE
+
+	Rank players in a Clan League
+
+	Display options:
+	  -h|--help     - Show this page
+	  -q|--quiet    - Do not output progress messages, which are normally
+	                  made to stderr. $myname" will be completely silent
+	                  until the result is output to stdout (see --output)
+
+	  --outfile OUTFILE
+	             Output results to OUTFILE instead of stdout.
+	             Roughtly equivalent to '$myname > OUTFILE'
+
+	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+	USAGE
+	exit 0
+}
+
+
+# Command-line arguments ------------------------------------------------------
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	-q|--quiet      ) verbose=0               ;;
+	*               ) invalid "$1"            ;;
+	esac
+	shift || :
+done
+
 searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
+
+
+# Main logic and procedures ---------------------------------------------------
 
 printf '%s\t' "Win%" "Won" "Games"
 printf 'Player Name\n'
 
 while read -r url first; do
 	echo "$first" "$url" >&2
-	wget -qO- "${mainurl}${url}" |
+	wget -qO- "${urlcc}${url}" |
 	awk  -v q="'" -v ok="$first" '
 	BEGIN {
 		w = "[ \t\r\n]*"
@@ -57,7 +130,7 @@ while read -r url first; do
 	}
 	! ok && $4 { ok = 1 }'
 done < <(
-	wget -qO- --post-data "$searchdata&search_status=" "$searchurl" |
+	wget -qO- --post-data "$searchdata&search_status=" "$urlsearch" |
 	awk -v q="'" -v clanid="$clan" '
 	BEGIN {
 		FS  = "([ \t]*(</nobr>)?</td><td>(<nobr>)?[ \t]*)|</td>"
