@@ -23,8 +23,9 @@
 
 # Default options -------------------------------------------------------------
 
-clan=${1:-88}  # THE PACK
-league=${2:-44}  # Clan League 7 - Second Division
+clan=88  # THE PACK
+league=44  # Clan League 7 - Second Division
+outfile=""
 
 
 # Constants and other globals - DO NOT CHANGE! --------------------------------
@@ -90,10 +91,25 @@ for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	-q|--quiet      ) verbose=0               ;;
+
+	--clan=*        ) clan=${1#*=}            ;;
+	--league=*      ) league=${1#*=}          ;;
+	--outfile=*     ) outfile=${1#*=}         ;;
+
+	--clan          ) shift ; clan=${1:-}     ;;
+	--league        ) shift ; league=${1:-}   ;;
+	--outfile       ) shift ; outfile=${1:-}  ;;
+
 	*               ) invalid "$1"            ;;
 	esac
 	shift || :
 done
+
+integer "$clan" "--clan" "CLANID"
+
+if [[ "$outfile" ]]; then
+	exec > "$outfile"
+fi
 
 searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
 
