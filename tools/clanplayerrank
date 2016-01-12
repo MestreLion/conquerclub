@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# clanplayerrank - Rank clan players in a League war in ConquerClub
+#
+#    Copyright (C) 2016 Rodrigo Silva (MestreLion) <conquerclub@rodrigosilva.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>
+
+# https://www.conquerclub.com/public.php?mode=showclans3&search_status=&search_clanleague=44&search_clan1=88
+
+mainurl=https://www.conquerclub.com
+searchurl="$mainurl"/public.php?mode=showclans3  # Clan Leagues
+
+clan=${1:-88}  # THE PACK
+league=${2:-44}  # Clan League 7 - Second Division
+
+searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
+
+printf '%s\t' "Win%" "Won" "Games"
+printf 'Player Name\n'
+
+while read -r url first; do
+	echo "$first" "$url" >&2
+	wget -qO- "${mainurl}${url}" |
+	awk  -v q="'" -v ok="$first" '
+	BEGIN {
+		w = "[ \t\r\n]*"
+		RS = w "(</tr>)?" w "<tr>" w "<td>" w "<a target=_blank href=" q
+		FS = q ">|</a>" w "</td>" w "<td>|</td>"
+		OFS = "\t"
+		ORS = "\n"
+	}
+	NR == 1 {next}
+
+	# $1 = Player URL, "/forum/memberlist.php?mode=viewprofile&u=683719"
+	# $2 = Player Name, "MestreLion"
+	# $3 = Score, "1/2"
+
+	ok {
+		split($1, url, "u=")
+		split($3, score, "/")
+		id = url[2]
+
+		print id, $2, score[1], score[2]
+		if($4) exit
+	}
+	! ok && $4 { ok = 1 }'
+done < <(
+	wget -qO- --post-data "$searchdata&search_status=" "$searchurl" |
+	awk -v q="'" -v clanid="$clan" '
+	BEGIN {
+		FS  = "([ \t]*(</nobr>)?</td><td>(<nobr>)?[ \t]*)|</td>"
+		OFS = "\t"
+		RS  = "<tr class=" q "(even|odd)" q "><td>"
+	}
+
+	NR == 1 {next}
+
+	# $1 = (Battle) Id, numeric
+	# $2 = (Battle) Name, "CL7 Second Division - Rd 5 - KNT vs SOH"
+	# $3 = Clans, "PACK VS SoH", with clans URL
+	#	"<a href="q"/public.php?mode=showclans1&ClanId=88"q">PACK </a> VS <a"
+	# $4 = Dates, "2015-12-15 - 2015-12-17", "-", "- 2013-10-10"
+	# $5 = Status
+	# 	"War Waiting/ Games None"
+	# 	"War Active/ Games Active"
+	# 	"War Active/ Games Inactive"
+	# 	"War Complete/ Games Inactive"
+	# $6 = Score, "PACK  4  VS SoH  2"
+	# $7 = Winners, "", "Otpisani", "the Fallen, The Pig Renters"
+	# $8 = Details URL, "/public.php?mode=showclanwar&ClanWarId=12"
+
+	{
+		if ($5 != "War Waiting/ Games None") {
+			split($3, clans, "ClanId=|" q ">")
+			split($8, url, q)
+			if(clans[2] == clanid) first = 1; else first = 0;
+			print url[2], first
+		}
+	}'
+) |
+awk  -v q="'" '
+BEGIN {
+	FS = "\t"
+	OFS = "\t"
+	CONVFMT = "%04d"
+}
+{
+	players[$1] = $2
+	wins[$1]  += $3
+	games[$1] += $4
+}
+END {
+	for (player in players) {
+		if (games[player] > 0) {
+			perc = sprintf("%5.1f", \
+				100.0 * wins[player] / games[player])
+			print perc, wins[player], games[player], players[player]
+		}
+	}
+}' |
+sort -nr
