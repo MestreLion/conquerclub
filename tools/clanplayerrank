@@ -125,9 +125,6 @@ searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
 
 # Main logic and procedures ---------------------------------------------------
 
-printf '%s\t' "Win%" "Won" "Games"
-printf 'Player Name\n'
-
 while read -r url first; do
 	echo "$first" "$url" >&2
 	wget -qO- "${urlcc}${url}" |
@@ -208,4 +205,24 @@ END {
 		}
 	}
 }' |
-sort -nr
+sort -nr |
+awk '
+BEGIN {
+	FS = "\t"
+	OFS = "\t"
+	wins  = 0
+	games = 0
+	perc  = 0
+}
+{
+	if (!games)
+		print "WIN%", "WINS", "GAMES", "PLAYER"
+	wins  += $2
+	games += $3
+	print
+}
+END {
+	if (games)
+		perc = sprintf("%5.1f", 100.0 * wins / games)
+	print perc, wins, games, "TOTAL"
+}'
