@@ -73,7 +73,7 @@ usage() {
 	Display options:
 	  -h|--help     - Show this page
 	  -q|--quiet    - Do not output progress messages, which are normally
-	                  made to stderr. $myname" will be completely silent
+	                  made to stderr. $myname will be completely silent
 	                  until the result is output to stdout (see --output)
 
 	  --outfile OUTFILE
@@ -82,19 +82,19 @@ usage() {
 
 	Game search options
 	  --game-type TYPE[,TYPE...]
-	              Game type(s), comma-separated (no spaces). Types are:
-	              (S)tandard, (C) Terminator, (A)ssassin, (P)olymorphic,
-	              (D)oubles, (T)riples, (Q)uadruples
+	             Game type(s), comma-separated (no spaces). Types are:
+	             (S)tandard, (C) Terminator, (A)ssassin, (P)olymorphic,
+	             (D)oubles, (T)riples, (Q)uadruples
 
 	  --team
-	              Alias for '--game-type D,T,Q,P'
+	             Alias for '--game-type D,T,Q,P'
 
 	Fetching options:
 	  --delay NUM
-	              Delay between requests, to prevent overloading the server.
-	              The default adheres to ConquerClub's "maximum of 5 requests
-	              per 10 seconds" API policy. Fractional numbers accepted.
-	              [default: $delay]
+	             Delay between requests, to prevent overloading the server.
+	             The default adheres to ConquerClub's "maximum of 5 requests
+	             per 10 seconds" API policy. Fractional numbers accepted.
+	             [default: $delay]
 
 	Required arguments:
 	  PLAYER
@@ -206,7 +206,7 @@ while (( $# )); do
 	-*              ) invalid "$1"            ;;
 	*               ) player="$1"             ;;
 	esac
-	shift
+	shift || :
 done
 
 [[ "$player" ]] || missing "" "PLAYER"
