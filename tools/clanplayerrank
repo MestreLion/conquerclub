@@ -25,6 +25,8 @@
 
 clan=88  # THE PACK
 league=44  # Clan League 7 - Second Division
+
+verbose=1
 outfile=""
 
 
@@ -125,8 +127,13 @@ searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
 
 # Main logic and procedures ---------------------------------------------------
 
-while read -r url first; do
-	echo "$first" "$url" >&2
+while read -r url first name; do
+	if ((first)); then
+		side="home"
+	else
+		side="away"
+	fi
+	header "Reading $side games from $name"
 	wget -qO- "${urlcc}${url}" |
 	awk  -v q="'" -v ok="$first" '
 	BEGIN {
@@ -180,8 +187,11 @@ done < <(
 		if ($5 != "War Waiting/ Games None") {
 			split($3, clans, "ClanId=|" q ">")
 			split($8, url, q)
-			if(clans[2] == clanid) first = 1; else first = 0;
-			print url[2], first
+			if(clans[2] == clanid)
+				first = 1
+			else
+				first = 0
+			print url[2], first, $2
 		}
 	}'
 ) |
