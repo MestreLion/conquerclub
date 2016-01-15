@@ -89,6 +89,13 @@ usage() {
 	             League ID. If blank it will count games from all leagues.
 	             [default: $league]
 
+	Listing options:
+	  --list-clans
+	             List all clans and their IDs
+
+	  --list-leagues
+	             List all leagues and their IDs
+
 	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
 	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
 	USAGE
@@ -96,12 +103,43 @@ usage() {
 }
 
 
+list_ids() {
+	local optiontype=${1:-clans}
+	wget -qO- -- "$urlsearch" |
+	awk -v optiontype="$optiontype" '
+	BEGIN {
+		RS  = "(</select>)?[ \t\n]*<option[ \t]*value=\""
+		FS  = "\"[^>]*>[ \t\n]*|</(option|select)>"
+		ORS = "\n"
+		OFS = "\t"
+		ok  = 0
+		if (optiontype == "clans")
+			start = 4
+		else
+			start = 2
+		print "ID", "NAME"
+		print "-------------------------------------------------"
+	}
+	!ok && NF == start {
+		ok=1
+		next
+	}
+	ok && $1 && $2 {
+		print $1, $2
+	}
+	ok && NF>2 {
+		exit
+	}'
+}
+
 # Command-line arguments ------------------------------------------------------
 
 for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	-q|--quiet      ) verbose=0               ;;
+	--list-clans    ) list_ids clans;   exit  ;;
+	--list-leagues  ) list_ids leagues; exit  ;;
 
 	--clan=*        ) clan=${1#*=}            ;;
 	--league=*      ) league=${1#*=}          ;;
