@@ -195,7 +195,7 @@ while read -r url first name; do
 		print id, $2, score[1], score[2]
 		if($4) exit
 	}
-	! ok && $4 { ok = 1 }'
+	! ok && $4 { ok = 1 }' &
 done < <(
 	wget -qO- --post-data "$searchdata&search_status=" "$urlsearch" |
 	awk -v q="'" -v clanid="$clan" '
