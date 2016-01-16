@@ -21,10 +21,101 @@
 # http://www.conquerclub.com/public.php?mode=showclans3&search_status=&search_clanleague=44
 
 
+# Default options -------------------------------------------------------------
+
+ongoing=0  # Include ongoing matches?
+league=44  # Clan League 7 - Second Division
+
+outfile=""
+
+
+# Constants and other globals - DO NOT CHANGE! --------------------------------
+
+myname=${0##*/}
 url=http://www.conquerclub.com/public.php?mode=showclans3  # Clan Leagues
 
-ongoing=${1:-0}  # Include ongoing games?
-league=${2:-44}  # Clan League 7 - Second Division
+
+# Generic helper functions ----------------------------------------------------
+
+fatal()   { if (($#)); then printf '%s' "$@" >&2; printf '\n' >&2; fi; exit 1; }
+argerr()  { echo ${1:-error} >&2; usage 1; }
+invalid() { argerr "invalid option: ${1:-}" ; }
+missing() { argerr "missing ${2:+$2 }argument${1:+ from $1}." ; }
+integer() { [[ "$1" ]] || missing "${2:-}" "${3-NUM}"; [[ "$1" != *[!0-9]* ]] ||
+            argerr "'$1'${2:+ in $2} is not an integer."; }
+
+
+# Main functions --------------------------------------------------------------
+
+usage() {
+	cat <<-USAGE
+	Usage: $myname [options]
+	USAGE
+	if [[ "${1:-}" ]] ; then
+		cat >&2 <<- USAGE
+		Try '$myname --help' for more information.
+		USAGE
+		exit 1
+	fi
+	cat <<-USAGE
+
+	Generate a scoreboard of a Clan League
+
+	Display options:
+	  -h|--help     - Show this page
+
+	  --outfile OUTFILE
+	             Output results to OUTFILE instead of stdout.
+	             Roughtly equivalent to '$myname > OUTFILE'
+
+	Game search options:
+	  --league LEAGUEID
+	             League ID.
+	             [default: $league]
+
+	  --ongoing
+	             Include ongoing matches, evaluating their current status as
+	             if they were finished. For example, a 0-0 match is counted
+	             as a draw and 0-1 as a loss. By default only finished
+	             matches are considered.
+
+	Listing options:
+	  --list-leagues
+	             List all leagues and their IDs
+
+	Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+	License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+	USAGE
+	exit 0
+}
+
+
+# Command-line arguments ------------------------------------------------------
+
+for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
+while (( $# )); do
+	case "$1" in
+	--ongoing       ) ongoing=1               ;;
+
+	--league=*      ) league=${1#*=}          ;;
+	--outfile=*     ) outfile=${1#*=}         ;;
+
+	--league        ) shift ; league=${1:-}   ;;
+	--outfile       ) shift ; outfile=${1:-}  ;;
+
+	*               ) invalid "$1"            ;;
+	esac
+	shift || :
+done
+
+integer "$league" "--league" "LEAGUEID"
+
+if [[ "$outfile" ]]; then
+	exec > "$outfile"
+fi
+
+
+# Main logic and procedures ---------------------------------------------------
 
 printf "RANK\tCLAN\tMATCHES\tM.WON\tM.DRAW\tM.LOST\tPOINTS\tG.DIFF\tGAMES\n"
 
