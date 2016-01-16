@@ -90,12 +90,37 @@ usage() {
 }
 
 
+list_leagues() {
+	wget -qO- -- "$url" |
+	awk '
+	BEGIN {
+		RS  = "(</select>)?[ \t\n]*<option[ \t]*value=\""
+		FS  = "\"[^>]*>[ \t\n]*|</(option|select)>"
+		ORS = "\n"
+		OFS = "\t"
+		ok  = 0
+		print "ID", "NAME"
+	}
+	!ok && NF == 2 {
+		ok=1
+		next
+	}
+	ok && $1 && $2 {
+		print $1, $2
+	}
+	ok && NF>2 {
+		exit
+	}'
+}
+
+
 # Command-line arguments ------------------------------------------------------
 
 for arg in "$@"; do [[ "$arg" == "-h" || "$arg" == "--help" ]] && usage ; done
 while (( $# )); do
 	case "$1" in
 	--ongoing       ) ongoing=1               ;;
+	--list-leagues  ) list_leagues; exit      ;;
 
 	--league=*      ) league=${1#*=}          ;;
 	--outfile=*     ) outfile=${1#*=}         ;;
