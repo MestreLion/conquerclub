@@ -262,7 +262,7 @@ END {
 		print perc, wins[map], games[map], map
 	}
 }' |
-sort -nr |
+LC_ALL=C sort -gr -k1,1 -k2,2 -k4 |
 awk '
 BEGIN {
 	FS = "\t"
