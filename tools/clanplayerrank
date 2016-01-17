@@ -253,7 +253,7 @@ END {
 		}
 	}
 }' |
-sort -nr |
+LC_ALL=C sort -gr -k1,1 -k2 |
 awk '
 BEGIN {
 	FS = "\t"
