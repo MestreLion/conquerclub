@@ -1,0 +1,39 @@
+#!/bin/bash -ue
+#
+# Apache configuration generator
+# Copyright (C) 2016 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
+# License: GPLv3 or later. See <http://www.gnu.org/licenses/gpl.html>
+
+project=conquerclub
+
+# Constants and other globals - DO NOT CHANGE! --------------------------------
+
+myname=${0##*/}
+mydir=$(dirname "$(readlink -f "$0")")
+
+docroot=$mydir/www
+cgibin=$mydir/cgi-bin
+
+target=/etc/apache2/sites-available/$project
+
+# Do stuff -------------------------------------------------------------------
+
+sudo rm -f -- "$target"
+
+{
+cat <<EOF
+# Created by $mydir/$myname
+
+ScriptAlias /$project/cgi-bin/ "$cgibin/"
+Alias /$project "$docroot"
+<Directory "$docroot">
+	Options +Indexes
+	IndexOptions FancyIndexing
+	DirectoryIndex index.php index.html
+</Directory>
+EOF
+} |
+sudo tee -- "$target" >/dev/null
+
+sudo a2ensite "$project"
+sudo service apache2 reload
