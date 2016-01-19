@@ -1,0 +1,6 @@
+mydir=$(dirname "$(readlink -f "$0")")
+toolsdir="$(readlink -f "$mydir"/../../tools)"
+
+export PATH=$PATH:"$toolsdir"
+
+printf 'Content-type: text/html\n\n'
