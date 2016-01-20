@@ -1,0 +1,22 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+	FS = "\t"
+	RS = "\n"
+}
+
+NR == 1 {
+	printf("[table]\n[tr]\t[th]")
+	gsub("\t", "__[/th]\t[th]")
+	printf($0 "__[/th]\t[/tr]\n")
+	next
+}
+
+{
+	gsub("\t", "[/td]\t[td]")
+	printf("[tr]\t[td]" $0 "[/td]\t[/tr]\n")
+}
+
+END {
+	if (NR) printf("[/table]\n")
+}
