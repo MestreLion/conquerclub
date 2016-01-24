@@ -12,5 +12,7 @@
 	<a href="cgi-bin/league_scoreboard">CL7 Scoreboards</a><br>
 	<br>
 	<a href="cgi-bin/maprank">Map Rank</a> (soon!)<br>
+	<br>
+	<a href="template.html">Template</a><br>
 </body>
 </html>
