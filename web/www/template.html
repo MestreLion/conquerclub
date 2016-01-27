@@ -32,26 +32,6 @@ if (typeof jQuery == 'undefined')
 		document.write(unescape("%3Cscript src='/lib/js/jquery-1.9.1.min.js' type='text/javascript'%3E%3C/script%3E"));
 }
 </script>
-<script>
-	window.fbAsyncInit = function() {
-		FB.init({
-			appId      : '687598281278757',
-			xfbml      : true,/*this is for auto-initiating social plugins*/
-			version    : 'v2.2'
-		});
-	};
-
-
-	(function(d, s, id){
-		 var js, fjs = d.getElementsByTagName(s)[0];
-		 if (d.getElementById(id)) {return;}
-		 js = d.createElement(s); js.id = id;
-		 js.src = "//connect.facebook.net/en_US/sdk.js";
-		 fjs.parentNode.insertBefore(js, fjs);
-	 }(document, 'script', 'facebook-jssdk'));
-
-</script>
-
 <script  type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
 
@@ -66,39 +46,9 @@ var is_new_player = false;
 	<script type="text/javascript" src="static/common.js"></script>
 	<script type="text/javascript" src="static/lightbox.js"></script>
 	<script type="text/javascript" src="static/pagination1.js"></script>
-<script type="text/javascript">
-	var _gaq = _gaq || [];
-	_gaq.push(['_setAccount', 'UA-6013438-1']);
-	_gaq.push(['_trackPageview']);
-			_gaq.push(['_setCustomVar', 1, 'Member Type', 'Premium', 1]);
-		(function() {
-		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
-		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	})();
-</script>
-
-<script type='text/javascript'>
-	var googletag = googletag || {};
-	googletag.cmd = googletag.cmd || [];
-	(function() {
-	var gads = document.createElement('script');
-	gads.async = true;
-	gads.type = 'text/javascript';
-	var useSSL = 'https:' == document.location.protocol;
-	gads.src = (useSSL ? 'https:' : 'http:') +
-	'//www.googletagservices.com/tag/js/gpt.js';
-	var node = document.getElementsByTagName('script')[0];
-	node.parentNode.insertBefore(gads, node);
-	})();
-</script>
 </head>
 
-<body >
-
-
-		<link href='https://fonts.googleapis.com/css?family=Stardos+Stencil:400,700' rel='stylesheet' type='text/css'>
-
+<body>
 		<style>
 		.cc_loader *, cc_loader *:before, cc_loader *:after { /* Padding happens inside box model, eg: doesn't add to height and width; */
 			-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; margin: 0; padding: 0;
@@ -704,26 +654,5 @@ Conquer Club is not associated with RISK online in any way. Copyright &copy; 200
 
 
 </div>
-
-<!-- Google Code for Remarketing Tag -->
-<!--------------------------------------------------
-Remarketing tags may not be associated with personally identifiable information or placed on pages related to sensitive categories. See more information and instructions on how to setup the tag on: http://google.com/ads/remarketingsetup
---------------------------------------------------->
-<div style="display:none">
-<script type="text/javascript">
-/* <![CDATA[ */
-var google_conversion_id = 1032897295;
-var google_custom_params = window.google_tag_params;
-var google_remarketing_only = true;
-/* ]]> */
-</script>
-<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
-</script>
-</div>
-<noscript>
-<div style="display:inline;">
-<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1032897295/?value=0&amp;guid=ON&amp;script=0"/>
-</div>
-</noscript>
 </body>
 </html>

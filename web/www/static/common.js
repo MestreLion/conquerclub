@@ -95,47 +95,6 @@ if (true) { //chrome supports this function now
 	};
 }
 
-function load_ads(){
-	if (is_new_player) return;
-	var ads = [
-	[2961492313,160,600]/*CC.Home.WideSkyscraper*/,
-	[4414214716,160,240]/*CC.Home.SmallSkyscraper*/,
-	[2797880714,160,600]/*CC.Home.SmallSkyscraper*/,
-	[1624359917,160,600]/*CC.Game.WideSkyscraper*/,
-	[5775357919,160,600]/*CC.Scoreboard.WideSkyscraper.Bottom*/,
-	[7252091110,160,600]/*CC.Scoreboard.WideSkyscraper.Top*/,
-	[7252091110,160,600]/*CC.JoinGame.WideSkyscraper*/,
-	[3193224311,160,600] /*CC.TheGame.Leaderboard*/,
-	[4669957517,160,600] /*CC.Tournaments.Leaderboard*/,
-	[6146690714,160,600] /*CC.Clans.Leaderboard*/,
-	[3659496312,160,600] /*CC.Forum.WideSkyscraper*/,
-  [1663421114,160,600] /*CC.Other.WideSkyscraper*/,
-
-	[9801931512,728,90] /*CC.Forum.Leaderboard*/,
-	[6054559512,728,90] /*CC.ForumTopic.Leaderboard */,
-	[1345158319,728,90] /*CC.MemberProfile.Leaderboard*/,
-	[3240693911,728,90] /*CC.ForumMember.Leaderboard*/,
-	[4438225515,728,90] /*CC.Inbox.Leaderboard*/,
-	[9147626714,728,90] /*CC.Game.Leaderboard*/,
-	[2821891510,728,90] /*CC.MyGames.Leaderboard*/,
-
-	];
-	for (i=0; i < ads.length; i++){
-		ad = ads[i];
-		id = ad[0];
-		width=ad[1];
-		height=ad[2];
-		d = document.getElementById('ad_'+id);
-
-		if (d){
-			var html = '<ins class="adsbygoogle" style="display:inline-block;width:'+width+'px;height:'+height+'px" data-ad-client="ca-pub-5788379347571949" data-ad-slot="'+id+'"></ins>';
-			d.innerHTML = html;
-
-			(adsbygoogle = window.adsbygoogle || []).push({});
-		}
-	}
-}
-
 function prepareMenuHider(init){
 	//console.log($('#leftColumn'));
 	if (menuIsHidden()|| is_mobile_device) {
