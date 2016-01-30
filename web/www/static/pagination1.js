@@ -2,12 +2,11 @@ var tickerTimer;var minTime = .01;var maxTime = .25;
 var totalPages;var currentPage;var gotoUrl;
 
 function togglePagePicker(id) {
-  var page_picker = document.getElementById('page_picker_'+id);
-//	var page_picker = $('#page_picker_'+id);console.log(page_picker);
+	var page_picker = document.getElementById('page_picker_'+id);
 	var page_picker_input = document.getElementById('page_picker_input_'+id);
 	if(page_picker.style.display == "none") {
 		page_picker.style.display = '';
-		page_picker_input.value = "";
+		page_picker_input.value = currentPage;
 		page_picker_input.focus();
 		page_picker_input.select();
 	}
@@ -17,10 +16,8 @@ function togglePagePicker(id) {
 }
 
 function gotoPage(id) {
-//  var page_picker = $('page_picker_'+id);
-  var page_picker = document.getElementById('page_picker_'+id);
-//	var page_picker_input = $('page_picker_input_'+id);
-  var page_picker_input = document.getElementById('page_picker_input_'+id);
+	var page_picker = document.getElementById('page_picker_'+id);
+	var page_picker_input = document.getElementById('page_picker_input_'+id);
 	var page = parseInt(page_picker_input.value);
 	if(isNaN(page) || page > totalPages || page < 1) {
 		page_picker_input.value = '';
@@ -59,7 +56,7 @@ function updateTickerValue(step, id) {
 		return doNextTick;
 	}
 	else {
-		var page_picker_input = $('page_picker_input_'+id);
+		var page_picker_input = document.getElementById('page_picker_input_'+id);
 		var doNextTick = true;
 		var value = parseInt(page_picker_input.value);
 		if(isNaN(value)) {value = currentPage;}
@@ -102,7 +99,6 @@ function toggleDisplay(item)
 	if (elm){ elm.style.display = ( elm.style.display != "none")?"none":""; }
 }
 
-//function $(id) {return document.getElementById(id);}
 function stopTicker() {clearTimeout(tickerTimer);}
 function keyCheck(e, id) {var key;if(window.event) {key = e.keyCode;} else {key = e.which;};if(key == 13) {gotoPage(id);};}
 
