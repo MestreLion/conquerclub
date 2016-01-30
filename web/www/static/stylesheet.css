@@ -961,7 +961,7 @@ div.ccpagination a.dropdown {padding:2px 3px;}
 div.ccpagination span.current_page {margin:0 4px;}
 div.ccpagination a:hover {background-color:#ded;}
 div.ccpagination a:active {border:1px inset #ddd;background-color:#898;}
-div.ccpagination a.disabled {color:#aaa;background-color:#eee;border:1px solid #999;}
+div.ccpagination a.disabled {color:#aaa;background-color:#eee;border:1px solid #999; pointer-events: none; cursor: default;}
 div.ccpagination span.search_results {font-weight:bold;}
 div.ccpagination div.page_picker {position:absolute;right:0;top:35px;border:1px solid #898;background-color:#bcb;padding:2px 4px;z-index:100;}
 div.ccpagination div.page_picker h4 {margin:-2px -4px 4px -4px;padding:2px 4px;font-weight:normal;border-bottom:1px dotted #000;background-color:#898;}
