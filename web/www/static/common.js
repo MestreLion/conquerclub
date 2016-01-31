@@ -87,7 +87,7 @@ function hideSideBar() {
 		//console.log($("#returnlink").html());
 		if (isGame()){
 			$("#right_hand_side").css({
-					width: "",
+					width: ""
 			})
 		}
 	}
@@ -132,7 +132,7 @@ var namespace = "CC.";
 
 //alert(window.innerHeight < window.innerWidth+','+window.innerHeight+','+screen.height);
 DEFAULT_CCOPTIONS = {
-	hideMenu: (is_mobile_device) ? 'In Game' : 'Never',
+	hideMenu: (is_mobile_device) ? 'In Game' : 'Never'
 };
 //@@ML
 //var ccOptions = $.extend({}, DEFAULT_CCOPTIONS, cc_deserialize("CCOPTIONS") || {});
@@ -142,7 +142,6 @@ var ccOptions = $.extend({}, DEFAULT_CCOPTIONS);
 
 window.onload=function(){
 (function($) {
-
 	if (!is_mobile_device || !isGame()){
 		d= document.getElementById('leftColumn');
 		if (d) d.style.display='';
@@ -154,7 +153,7 @@ window.onload=function(){
 	}
 	prepareMenuHider(true);
 	//alert(window.innerHeight+","+window.outerHeight +","+ screen.height);
-	footer = document.getElementById('footer');
+	var footer = document.getElementById('footer');
 	if (footer) var w = footer.offsetTop;
 	if (!is_mobile_device && menuIsHidden() && w < screen.height) {//move footer off screen
 		//var w = screen.height - window.innerHeight;
