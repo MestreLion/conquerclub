@@ -35,8 +35,8 @@
 //
 
 // If you would like to use a custom loading image or close button reference them in the next two lines.
-var loadingImage = ('https:' == document.location.protocol ? 'https://d3udgt0w45hpcz.cloudfront.net' : 'http://static.conquerclub.com') + '/lightbox_loading.gif';
-var closeButton = ('https:' == document.location.protocol ? 'https://d3udgt0w45hpcz.cloudfront.net' : 'http://static.conquerclub.com') +'/lightbox_close.gif';
+var loadingImage = 'images/static/lightbox_loading.gif';
+var closeButton = 'images/static/lightbox_close.gif';
 
 
 

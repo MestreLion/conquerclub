@@ -949,7 +949,7 @@ ul.rating li.five a:hover {background-position:0 -80px}
 	background-color: #333;
 	back\ground-color: transparent;
 	_background-image: none;
-	_filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="http://static.conquerclub.com/lightbox_overlay.png", sizingMethod="scale");
+	_filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="images/static/lightbox_overlay.png", sizingMethod="scale");
 }
 
 /* pagination styles */
