@@ -227,7 +227,7 @@ margin-top: -3px;
 
 span.social {
 display: inline-block;
-background: url('social.png');
+background: url(../images/static/social.png);
 width: 32px;
 height: 32px;
 margin-left: 10px;
@@ -311,51 +311,51 @@ white-space: nowrap;
 }
 ul.players li.status_red{
 padding-left: 18px; /* 28 - 10px rank width = 18px padding */
-background: url(icon_status_red.gif) left no-repeat;
+background: url(../images/static/icon_status_red.gif) left no-repeat;
 }
 ul.players li.status_yellow {
 padding-left: 18px;
-background: url(icon_status_yellow.gif) left no-repeat;
+background: url(../images/static/icon_status_yellow.gif) left no-repeat;
 }
 ul.players li.status_green {
 padding-left: 18px;
-background: url(icon_status_green.gif) left no-repeat;
+background: url(../images/static/icon_status_green.gif) left no-repeat;
 }
 ul.players li.status_blocked{
 padding-left: 18px;
-background: url(icon_status_blocked.gif) left no-repeat;
+background: url(../images/static/icon_status_blocked.gif) left no-repeat;
 }
 ul.players span.status_red{
 padding-left: 18px; /* 28 - 10px rank width = 18px padding */
-background: url(icon_status_red.gif) left no-repeat;
+background: url(../images/static/icon_status_red.gif) left no-repeat;
 }
 ul.players span.status_yellow {
 padding-left: 18px;
-background: url(icon_status_yellow.gif) left no-repeat;
+background: url(../images/static/icon_status_yellow.gif) left no-repeat;
 }
 ul.players span.status_green {
 padding-left: 18px;
-background: url(icon_status_green.gif) left no-repeat;
+background: url(../images/static/icon_status_green.gif) left no-repeat;
 }
 ul.players span.status_blocked{
 padding-left: 18px;
-background: url(icon_status_blocked.gif) left no-repeat;
+background: url(../images/static/icon_status_blocked.gif) left no-repeat;
 }
 table.players td.status_red {
 padding-left: 18px; /* 28 - 10px rank width = 18px padding */
-background: url(icon_status_red.gif) left no-repeat;
+background: url(../images/static/icon_status_red.gif) left no-repeat;
 }
 table.players td.status_yellow {
 padding-left: 18px;
-background: url(icon_status_yellow.gif) left no-repeat;
+background: url(../images/static/icon_status_yellow.gif) left no-repeat;
 }
 table.players td.status_green {
 padding-left: 18px;
-background: url(icon_status_green.gif) left no-repeat;
+background: url(../images/static/icon_status_green.gif) left no-repeat;
 }
 table.players td.status_blocked {
 padding-left: 18px;
-background: url(icon_status_blocked.gif) left no-repeat;
+background: url(../images/static/icon_status_blocked.gif) left no-repeat;
 }
 
 /* rank styles */
@@ -366,10 +366,10 @@ padding-top: 1px;
 padding-bottom: 1px;
 }
 .rank.f {
-background: url('ranks_f2.png') no-repeat;
+background: url(../images/static/ranks_f2.png) no-repeat;
 }
 .rank.p {
-background: url('ranks_p2.png') no-repeat;
+background: url(../images/static/ranks_p2.png) no-repeat;
 }
 .rank.r1 {background-position: 0 -18px;}
 .rank.r2 {background-position: 0 -36px;}
@@ -394,16 +394,16 @@ a.rating, span.rating {
 padding-left: 16px;
 padding-top: 1px;
 padding-bottom: 1px;
-background: url(icon_rating_1.gif) left no-repeat;
+background: url(../images/static/icon_rating_1.gif) left no-repeat;
 }
 a.rating.none {
-background: url(icon_rating_0.gif) left no-repeat;
+background: url(../images/static/icon_rating_0.gif) left no-repeat;
 }
 a.rating.new {
-background: url(icon_rating_1.gif) left no-repeat;
+background: url(../images/static/icon_rating_1.gif) left no-repeat;
 }
 a.rating.old {
-background: url(icon_rating_2.gif) left no-repeat;
+background: url(../images/static/icon_rating_2.gif) left no-repeat;
 }
 
 /* masthead styles */
@@ -585,7 +585,7 @@ padding: 0;
 #rolls li {
 float: left;
 list-style-type: none;
-background: url('dice.png') no-repeat;
+background: url(../images/static/dice.png) no-repeat;
 width: 25px;
 height: 25px;
 text-indent: -9999px; /* hide text to allow copying dice rolls */
@@ -630,14 +630,14 @@ div.message.error {
 background: #FFDAE1 none repeat scroll 0%;
 }
 div.message.error h4 {
-background: transparent url(icon_msg_error.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_error.gif) no-repeat scroll left center;
 color: #494B3D;
 }
 div.message.alert {
 background: #FCFCD2 none repeat scroll 0%;
 }
 div.message.alert h4 {
-background: transparent url(icon_msg_alert.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_alert.gif) no-repeat scroll left center;
 color: #494B3D;
 }
 div.message.announcement {
@@ -647,21 +647,21 @@ div.message.success {
 background: #D9EFD0 none repeat scroll 0%;
 }
 div.message.success h4 {
-background: transparent url(icon_msg_success.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_success.gif) no-repeat scroll left center;
 color: #43AD12;
 }
 div.message.loading {
 background: #FCFCD2 none repeat scroll 0%;
 }
 div.message.loading h4 {
-background: transparent url(icon_msg_loading.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_loading.gif) no-repeat scroll left center;
 color: #494B3D;
 }
 div.message.info {
 background: #EBF5FF none repeat scroll 0%;
 }
 div.message.info h4 {
-background: transparent url(icon_msg_info.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_info.gif) no-repeat scroll left center;
 color: #3399FF;
 }
 
@@ -669,21 +669,21 @@ div.message.premium1 {
 background: #FCFCD2 none repeat scroll 0%;
 }
 div.message.premium1 h4 {
-background: transparent url(icon_msg_alert.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_alert.gif) no-repeat scroll left center;
 color: #494B3D;
 }
 div.message.premium2 {
 background: #D9EFD0 none repeat scroll 0%;
 }
 div.message.premium2 h4 {
-background: transparent url(icon_msg_upgrade22b.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_upgrade22b.gif) no-repeat scroll left center;
 color: #43AD12;
 }
 div.message.premium3 {
 background: #F8E5CD none repeat scroll 0%;
 }
 div.message.premium3 h4 {
-background: transparent url(icon_msg_upgrade6a.gif) no-repeat scroll left center;
+background: transparent url(../images/static/icon_msg_upgrade6a.gif) no-repeat scroll left center;
 color: #E17C03;
 }
 
@@ -873,7 +873,7 @@ margin:0 0 1em 0;
 padding:0;
 list-style:none;
 position:relative;
-background: url(rating_matrix.png) no-repeat 0 0;
+background: url(../images/static/rating_matrix.png) no-repeat 0 0;
 }
 /* add these classes to the ul to effect the change to the correct number of stars */
 .star0 {background-position:0 0}
@@ -916,7 +916,7 @@ width:96px;
 height:16px;
 overflow:hidden;
 left:0px;
-background: url(rating_matrix.png) no-repeat 0 0
+background: url(../images/static/rating_matrix.png) no-repeat 0 0
 }
 ul.rating li.no a:hover {background-position:0 0px;}
 ul.rating li.one a:hover {background-position:0 -16px;}
@@ -943,7 +943,7 @@ ul.rating li.five a:hover {background-position:0 -80px}
 #lightbox img {border: none; clear: both;}
 #overlay img {border: none;}
 
-#overlay {background-image: url(lightbox_overlay.png);}
+#overlay {background-image: url(../images/static/lightbox_overlay.png);}
 
 * html #overlay {
 	background-color: #333;
@@ -1021,7 +1021,7 @@ a.CC_leftNav:hover, a.CC_leftNav:active{color:#FF0000;}
 #mainNavAndLogo{display:table;}
 
 #mainNav {display:table-cell;margin-top:15px;height2:50px;vertical-align:middle;border2: thin solid blue;}
-#mainNav li{font-size:17px;float:left; list-style-type:none; background-image:url(navDivider.png); background-position:top left; background-repeat:no-repeat; }
+#mainNav li{font-size:17px;float:left; list-style-type:none; background-image:url(../images/static/navDivider.png); background-position:top left; background-repeat:no-repeat; }
 #mainNav li:first-child{background-image:none; margin-left:10px;}
 #mainNav a{color:white; text-decoration:none; padding:0px 12px; text-shadow: 0px 0px 2px #000000; filter: dropshadow(color=#000000, offx=0, offy=0);}
 #mainNav a:hover, a:active{color:#FF0000}
@@ -1030,7 +1030,7 @@ a.CC_leftNav:hover, a.CC_leftNav:active{color:#FF0000;}
 #CC_mainlogo_mobile{position:absolute;z-index:999;padding:0px; margin:0px;top:-4px;border2:thin solid black;}
 #CC_mainlogo_mobile img{}
 #mainNav_mobile {width:100%;margin-top:12px;padding-left:10px;margin-left:auto;margin-right:auto;vertical-align:middle;text-align:center;border2: thin solid blue;}
-#mainNav_mobile span{font-size:16px;list-style-type:none; background-image:url(navDivider.png); background-position:top left; background-repeat:no-repeat; }
+#mainNav_mobile span{font-size:16px;list-style-type:none; background-image:url(../images/static/navDivider.png); background-position:top left; background-repeat:no-repeat; }
 #mainNav_mobile span:first-child{background-image:none; margin-left:5px;}
 #mainNav_mobile a{color:white; text-decoration:none; padding:0px 2px 0px 5px; text-shadow: 0px 0px 2px #000000; filter: dropshadow(color=#000000, offx=0, offy=0);}
 #mainNav_mobile a:hover, a:active{color:#FF0000}
