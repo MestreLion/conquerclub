@@ -73,7 +73,7 @@ function setThumb(val)
 	if (val >= 0) {
 		map_link.href = 'images/maps/' + mapFiles[val];
 		map_link.title = mapTitles[val] + ',' + mapTopics[val];
-		map_thumb.style.backgroundImage = 'url(http://maps.conquerclub.com/'+ mapThumbs[val] + ')';
+		map_thumb.style.backgroundImage = 'url(images/maps/'+ mapThumbs[val] + ')';
 		map_thumb.src = (mapStatuses[val] == 'B') ? 'images/static/map_beta.png' : 'images/static/map_normal.png';
 		map_thumb.title = mapTitles[val];
 		map_thumb.alt = mapTitles[val];
@@ -86,7 +86,7 @@ function setThumbs(opts)
 	for (var i = 0; i < opts.length; i++) {
 		if (opts[i].selected) {
 			var map_status = (mapStatuses[i] == 'B') ? 'images/static/map_beta.png' : 'images/static/map_normal.png';
-			thumbs += ' <a href="http://maps.conquerclub.com/' + mapFiles[i] + '" rel="lightbox" title="' + mapTitles[i] + ',' + mapTopics[i] + '"><img style="background-image:url(http://maps.conquerclub.com/'+ mapThumbs[i] + ')" src="' + map_status + '" width="50" height="34" alt="' + mapTitles[i] + '" title="' + mapTitles[i] + '" /></a>';
+			thumbs += ' <a href="images/maps/' + mapFiles[i] + '" rel="lightbox" title="' + mapTitles[i] + ',' + mapTopics[i] + '"><img style="background-image:url(images/maps/'+ mapThumbs[i] + ')" src="' + map_status + '" width="50" height="34" alt="' + mapTitles[i] + '" title="' + mapTitles[i] + '" /></a>';
 		}
 	}
 	map_thumbs.innerHTML = thumbs;
