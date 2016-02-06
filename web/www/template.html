@@ -3,7 +3,6 @@
 <head>
 <title>Conquer Club :: Game Finder - Play Risk Online Free</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<!--<meta name="robots" content="NOODP">-->
 <meta name="description" content="Play Risk Online Free at Conquer Club" />
 <meta name="keywords" content="conquer club,risk,play risk free,game,online game,free game,board game,multiplayer,world domination" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,28 +10,12 @@
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link rel="alternate" type="application/rss+xml" title="Conquer Club: MestreLion's games" href="rss.php?user_id=683719" />
 	<link rel="stylesheet" href="css/skidoo_too.min.css" type="text/css" />
-	<style type="text/css"><!--
+	<style type="text/css">
 		#rightColumn { display: none; }
 		#SOWrap { margin: 0; }
 		#innerColumnContainer, #outerColumnContainer { border-right-width: 0; }
-	--></style>
+	</style>
 	<link rel="stylesheet" href="css/stylesheet.css" type="text/css" />
-	<!--
-		Do not use Protocol Relative URL (src="//...")
-		http://stackoverflow.com/questions/28446314/
-		http://www.paulirish.com/2010/the-protocol-relative-url/
-
-		Do not use jquery-latest:
-		http://stackoverflow.com/questions/12608242/
-		http://blog.jquery.com/2014/07/03/dont-use-jquery-latest-js/
-
-		Base theme was deprecated in jquery-ui 1.10.2:
-		http://blog.jqueryui.com/2013/03/jquery-ui-1-10-2/
-		https://github.com/jquery/jquery-ui/commit/38fce3f30478bcfce8ea837d850f63b5560d605a
-
-		Use jQuery's CDN instead of Google's:
-		https://github.com/h5bp/html5-boilerplate/commit/340b012a1f5d096658ecfc3072ca0009ab0f80f3
-	-->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<link   type="text/css"       href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
@@ -363,13 +346,11 @@ var is_new_player = false;
 		}
 		function displaytime(){
 			serverdate.setMilliseconds(serverdate.getMilliseconds()+1000)
-			//alert(serverdate);
 			var datestring=montharray[serverdate.getMonth()]+" "+padlength(serverdate.getDate())+", "
 			var timestring=padlength(serverdate.getHours())+":"+padlength(serverdate.getMinutes())+":"+padlength(serverdate.getSeconds())
 			document.getElementById("servertime").innerHTML=datestring+" "+timestring+" CCT"
 		}
 		function init_clock(){
-//			displaytime()
 			setInterval("displaytime()", 1000)
 		}
 		$(function() {
@@ -404,11 +385,8 @@ var is_new_player = false;
 			<li><a href="player.php?mode=join1">Join Games</a></li>
 			<li><a href="player.php?mode=start">Start Games</a></li>
       <li><a href="player.php?mode=find2">Game Finder</a></li>
-			<!--<li><a href="public.php?mode=cup1">Conquer Cup</a></li>-->
 			<li><a href="player.php?mode=br">Battle Royale</a></li>
       <li><a href="http://www.conquerclub.com/player.php?mode=gameengine">Other Games</a></li>
-			<!--<li><a href="javascript:void 0;" id=menu_hider onClick='toggleHideMenu()'></a></li>-->
-
 		</ul>
 
 		<h3>Announcements</h3><ul style='opacity:.9;font-size:10px;'><li class= style='display:;'><a style='' title='Clans: The Next Clan Interrogated is...' href='https://www.conquerclub.com/forum/viewtopic.php?f=438&t=216819'><span style='display:inline;' class='player6'>&bull;</span>The Next Clan Interrogated is...</a></li><li class= style='display:;'><a style='' title='Tournaments: Fight For a Beer' href='https://www.conquerclub.com/forum/viewtopic.php?f=90&t=216746#p4773745'><span style='display:inline;' class='player7'>&bull;</span>Fight For a Beer</a></li><li class= style='display:;'><a style='' title='Team CC:  Features Panel Suggestion Tracker' href='http://www.conquerclub.com/forum/viewtopic.php?f=4&t=216737'><span style='display:inline;' class='player8'>&bull;</span> Features Panel Suggestion Tracker</a></li><li class=announcements style='display:none;'><a style='' title='Events: Monumental Battle Royale Game Reforged' href='https://www.conquerclub.com/player.php?mode=autotournament&tournament_id=3711'><span style='display:inline;' class='player5'>&bull;</span>Monumental Battle Royale Game Reforged</a></li><li class=announcements style='display:none;'><a style='' title='Community: Congrats to GreenBaize on SOS Africa II Triumph' href='https://www.conquerclub.com/forum/viewtopic.php?f=1&t=195873#p4763746'><span style='display:inline;' class='player2'>&bull;</span>Congrats to GreenBaize on SOS Africa II Triumph</a></li><li class=announcements style='display:none;'><a style='' title='Events: Five tourneys left for Decade in Review Challenge' href='https://www.conquerclub.com/forum/viewtopic.php?f=786&t=216374#p4765292'><span style='display:inline;' class='player5'>&bull;</span>Five tourneys left for Decade in Review Challenge</a></li><li class=announcements style='display:none;'><a style='' title='Tournaments: Quads Teams Needed for New TPA tourney.' href='https://www.conquerclub.com/forum/viewtopic.php?f=90&t=216466#p4766656'><span style='display:inline;' class='player7'>&bull;</span>Quads Teams Needed for New TPA tourney.</a></li><li class=announcements style='display:none;'><a style='' title='Community: Say Something Nice' href='http://www.conquerclub.com/forum/viewtopic.php?f=6&t=216464'><span style='display:inline;' class='player2'>&bull;</span>Say Something Nice</a></li><li class=announcements style='display:none;'><a style='' title='Community: Congratulations to all the Olympic Medalists' href='https://www.conquerclub.com/forum/viewtopic.php?f=1&t=214629&start=200#p4764647'><span style='display:inline;' class='player2'>&bull;</span>Congratulations to all the Olympic Medalists</a></li><li class=announcements style='display:none;'><a style='' title='Webmaster: CC Will Soon Celebrate its Tenth Birthday!' href='http://www.conquerclub.com/forum/viewtopic.php?f=1&t=216193#p4761960'><span style='display:inline;' class='player1'>&bull;</span>CC Will Soon Celebrate its Tenth Birthday!</a></li><li class=announcements style='display:none;'><a style='' title='Maps: WWI Gallipoli has been Quenched!' href='http://www.conquerclub.com/forum/viewtopic.php?f=358&t=73475&start=525#p4744046'><span style='display:inline;' class='player3'>&bull;</span>WWI Gallipoli has been Quenched!</a></li><li class=announcements style='display:none;'><a style='' title='Maps: Beta testers needed for new maps.' href='http://www.conquerclub.com/forum/viewtopic.php?f=10&t=213707'><span style='display:inline;' class='player3'>&bull;</span>Beta testers needed for new maps.</a></li><li class=announcements style='display:none;'><a style='' title='Webmaster: New Campaigns!' href='http://www.conquerclub.com/forum/viewtopic.php?f=1&t=211823'><span style='display:inline;' class='player1'>&bull;</span>New Campaigns!</a></li><li class=announcements style='display:none;'><a style='' title='Maps: Open callout for Foundry Volunteers' href='http://www.conquerclub.com/forum/viewtopic.php?f=10&t=209128'><span style='display:inline;' class='player3'>&bull;</span>Open callout for Foundry Volunteers</a></li><li><a id=more href='javascript:void 0;' onClick='showannouncements();' href='javascript:void 0;'>More</a></li></ul>
@@ -460,7 +438,6 @@ var is_new_player = false;
 
 <!-- footer begin -->
 
-<!--<div id=footer_nav class=footerNav style='height:100%;z-index:1;border2:thin solid red;position:absolute;left:10px;'>-->
 <table width=100% border=0>
 <tr height=40>
 <td  align=left valign=center>
