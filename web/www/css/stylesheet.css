@@ -1029,7 +1029,7 @@ a.CC_leftNav:hover, a.CC_leftNav:active{color:#FF0000;}
 #mainheader_mobile{position:relative;padding:0px;font-family:Arial, Helvetica, sans-serif; border-top:1px solid #333333; border-bottom:1px solid #333333; display:none;width:100%;min-height:40px;background-color:rgb(136, 153, 136);}
 #CC_mainlogo_mobile{position:absolute;z-index:999;padding:0px; margin:0px;top:-4px;border2:thin solid black;}
 #CC_mainlogo_mobile img{}
-#mainNav_mobile {width:100%;margin-top:12px;padding-left:10px;margin-left:auto;margin-right:auto;vertical-align:middle;text-align:center;border2: thin solid blue;}
+#mainNav_mobile {margin-top:12px;padding-left:10px;margin-left:auto;margin-right:auto;vertical-align:middle;text-align:center;border2: thin solid blue;}
 #mainNav_mobile span{font-size:16px;list-style-type:none; background-image:url(../images/static/navDivider.png); background-position:top left; background-repeat:no-repeat; }
 #mainNav_mobile span:first-child{background-image:none; margin-left:5px;}
 #mainNav_mobile a{color:white; text-decoration:none; padding:0px 2px 0px 5px; text-shadow: 0px 0px 2px #000000; filter: dropshadow(color=#000000, offx=0, offy=0);}
