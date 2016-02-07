@@ -34,6 +34,10 @@
 		var is_mobile_device = false;
 		var is_new_recruit = false;
 		var is_new_player = false;
+		var totalPages = 9;
+		var currentPage = 5;
+		var gotoUrl = "player.php?submit=Search&&hr=N&p1=MestreLion&p2=Yellow+Peril&order=D&so=D&page=&page=";
+		var currenttime = 'Jan 31 2016, 18:46:31';
 	</script>
 	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript" src="js/lightbox.js"></script>
@@ -85,11 +89,6 @@
 
 <p>Here are all the games that match your search criteria:</p>
 
-<script type="text/javascript">
-	totalPages = 9;
-	currentPage = 5;
-	gotoUrl = "player.php?submit=Search&&hr=N&p1=MestreLion&p2=Yellow+Peril&order=D&so=D&page=&page=".replace(/&amp;/g, "&");
-</script>
 <div class="ccpagination">
 	<span class="search_results">3 results on 10 pages:</span>
 	<a href="player.php?submit=Search&&hr=N&p1=MestreLion&p2=Yellow+Peril&order=D&so=D&page=&page=1" class="firstLast">&lt;&lt;</a>
@@ -255,40 +254,6 @@
 <!--- left column begin -->
 <div class="vnav" id="leftnav">
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
-		<script type="text/javascript">
-			var currenttime = 'Jan 31 2016, 18:46:31'
-			var montharray=new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
-			var serverdate=new Date(currenttime)
-			function padlength(what){
-				var output=(what.toString().length==1)? "0"+what : what
-				return output
-			}
-			function displaytime(){
-				serverdate.setMilliseconds(serverdate.getMilliseconds()+1000)
-				var datestring=montharray[serverdate.getMonth()]+" "+padlength(serverdate.getDate())+", "
-				var timestring=padlength(serverdate.getHours())+":"+padlength(serverdate.getMinutes())+":"+padlength(serverdate.getSeconds())
-				document.getElementById("servertime").innerHTML=datestring+" "+timestring+" CCT"
-			}
-			function init_clock(){
-				setInterval("displaytime()", 1000)
-			}
-			$(function() {
-				if ($(this).width() < 925) $("#cctime").hide();
-					$(window).resize(function() {
-					if ($(this).width() < 925) $("#cctime").hide();
-					else $("#cctime").show();
-					});
-			});
-			if (typeof addLoadEvent	== 'function'){
-				addLoadEvent(init_clock);
-			}
-			else{
-
-				$(window).load(function() {
-				init_clock();
-				});
-			}
-		</script>
 		<span id="servertime"><div style='height:15px;'>Jan 31, 18:46:31 CCT</div></span>
 	</div>
 	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="logout.php">logout <b>MestreLion</b></a>]</p>
@@ -321,16 +286,6 @@
 		<li class=announcements style='display:none;'><a title='Maps: Open callout for Foundry Volunteers' href='http://www.conquerclub.com/forum/viewtopic.php?f=10&t=209128'><span class='player3'>&bull;</span>Open callout for Foundry Volunteers</a></li>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
-	<script>
-		function showannouncements() {
-			var more = ($('#more').html()=='More') ? 'Less' : 'More';
-			if (more == 'More')
-				$('.announcements').css('display','none');
-			else
-				$('.announcements').css('display','');
-			$('#more').html(more);
-		}
-	</script>
 
 	<h3>Interaction Menu</h3>
 	<ul>

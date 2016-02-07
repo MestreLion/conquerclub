@@ -1,5 +1,4 @@
 var tickerTimer;var minTime = .01;var maxTime = .25;
-var totalPages;var currentPage;var gotoUrl;
 
 function togglePagePicker(id) {
 	var page_picker = document.getElementById('page_picker_'+id);

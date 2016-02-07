@@ -196,13 +196,47 @@ window.onload=function(){
 	}
 	//if ($('#menu_hider')) $('#menu_hider').html("Hide Menu: <b>" + ccOptions.hideMenu + '</b>');
 
+	// Clock-related functions
+	if ($(this).width() < 925)
+		$("#cctime").hide();
+	$(window).resize(function() {
+		if ($(this).width() < 925)
+			$("#cctime").hide();
+		else
+			$("#cctime").show();
+	});
+	init_clock();
+
 	if (typeof onload_functions != 'undefined') {
 		for (var i = 0; i < onload_functions.length; i++)
 		{
 			eval(onload_functions[i]);
 		}
 	}
-
 })( jQuery );
-
 };
+
+function showannouncements() {
+	var more = ($('#more').html()=='More') ? 'Less' : 'More';
+	if (more == 'More')
+		$('.announcements').css('display','none');
+	else
+		$('.announcements').css('display','');
+	$('#more').html(more);
+}
+
+var montharray=new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+var serverdate=new Date(currenttime)
+function padlength(what){
+	var output=(what.toString().length==1)? "0"+what : what
+	return output
+}
+function displaytime(){
+	serverdate.setMilliseconds(serverdate.getMilliseconds()+1000)
+	var datestring=montharray[serverdate.getMonth()]+" "+padlength(serverdate.getDate())+", "
+	var timestring=padlength(serverdate.getHours())+":"+padlength(serverdate.getMinutes())+":"+padlength(serverdate.getSeconds())
+	document.getElementById("servertime").innerHTML=datestring+" "+timestring+" CCT"
+}
+function init_clock(){
+	setInterval("displaytime()", 1000)
+}
