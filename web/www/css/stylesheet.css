@@ -4,6 +4,11 @@
 
 /* skidoo_too styles */
 
+/* make the footer appear to "extend" to the bottom by using the same background color */
+html {
+	background-color: #898;
+}
+
 /* shrink page margin */
 body
 {
@@ -429,6 +434,18 @@ text-align: right;
 }
 
 /* footer styles */
+
+/*
+	remove bottom border so it appears to extend to bottom of page
+	not perfect as pageWrapper has side borders
+*/
+#footer
+{
+	border-bottom: 0px none;
+	padding: 20px 0 0;
+	min-height: 60px;
+	width: auto;
+}
 
 #footer .left {
 float: left;
