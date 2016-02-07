@@ -28,7 +28,7 @@ body
 #pageWrapper{min-width:100px;}/* override on something in skidoo*/
 
 #leftColumn{
-	 min-height: 800px;
+	 min-height: 600px;
 }
 
 /* put some padding on main content */
