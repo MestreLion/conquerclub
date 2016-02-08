@@ -1,4 +1,3 @@
-var leftNavWidth = 167;
 var leftnav_hidden_by_toggle=false;
 
 if (is_mobile_device) toggle_leftnav();
@@ -145,11 +144,6 @@ window.onload=function(){
 	if (!is_mobile_device || !isGame()){
 		d= document.getElementById('leftColumn');
 		if (d) d.style.display='';
-		//document.getElementById('leftColumn').style.width=leftNavWidth+"px";
-		d=document.getElementById('outerColumnContainer');
-		if (d) d.style.borderLeftWidth=leftNavWidth+"px";
-		//alert(document.getElementById('outerColumnContainer').style.borderLeftWidth);
-		//$("#leftColumn").css({display:''});
 	}
 	prepareMenuHider(true);
 	//alert(window.innerHeight+","+window.outerHeight +","+ screen.height);

@@ -19,6 +19,13 @@ body
 					 it automatically goes below 20px on low-res browsers
 					 to create more space for the content. */
 }
+
+/* Width override to match CC's menu toggle. Ideally 13em instead of 167px */
+#outerColumnContainer
+{
+	border-left-width: 167px;
+}
+
 /* star-html hack to fix the dropping left-hand menu */
 * html #leftColumn
 {
