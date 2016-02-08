@@ -28,6 +28,10 @@ body
 	border-left-width: 167px;
 }
 
+#SOWrap { margin: 0; }
+#innerColumnContainer, #outerColumnContainer { border-right-width: 0; }
+
+
 /* star-html hack to fix the dropping left-hand menu */
 * html #leftColumn
 {
