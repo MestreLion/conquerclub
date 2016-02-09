@@ -207,7 +207,7 @@ function showLightbox(objLink)
 			//objCaption.style.width = imgPreload.width + 'px';
 			var captionParts = objLink.getAttribute('title').split(",");
 			if (captionParts[1] != '0') {
-				objCaption.innerHTML = captionParts[0] + ' Map &nbsp; [<a href="forum/viewtopic.php?t=' + captionParts[1] + '">discussion topic</a>]';
+				objCaption.innerHTML = captionParts[0] + ' Map &nbsp; [<a href="" title="' + captionParts[1] + '">discussion topic</a>]';
 			} else {
 				objCaption.innerHTML = captionParts[0] + ' Map';
 			}
