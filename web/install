@@ -51,7 +51,7 @@ Alias /$project "$docroot"
 </Directory>
 EOF
 } |
-sudo tee -- "$target" >/dev/null
+sudo tee -- "$target"
 
 sudo a2ensite "$project"
 sudo service apache2 reload
