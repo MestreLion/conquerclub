@@ -14,5 +14,7 @@
 	<a href="cgi-bin/maprank">Map Rank</a> (soon!)<br>
 	<br>
 	<a href="template.html">Template</a><br>
+	<br>
+	<a href="phpinfo.php">PHP Information</a><br>
 </body>
 </html>

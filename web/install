@@ -56,6 +56,12 @@ Alias /$project "$docroot"
 #		php_value  docref_root             0
 #		php_value  docref_ext              0
 	</IfModule>
+
+	<Files "phpinfo.php">
+		order deny,allow
+		deny from all
+		allow from localhost 127.0.0.1
+	</Files>
 </Directory>
 EOF
 } |
