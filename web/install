@@ -13,8 +13,10 @@ mydir=$(dirname "$(readlink -f "$0")")
 
 docroot=$mydir/www
 cgibin=$mydir/cgi-bin
+errorlog=$mydir/php_errors.log
 
 target=/etc/apache2/sites-available/$project
+apachegroup=www-data
 
 # Do stuff -------------------------------------------------------------------
 
@@ -38,6 +40,7 @@ Alias /$project "$docroot"
 		php_flag   track_errors            on
 		php_flag   log_errors              on
 		php_value  error_reporting         -1
+		php_value  error_log               "$errorlog"
 		php_value  log_errors_max_len      0
 
 		# Already the default:
@@ -52,6 +55,12 @@ Alias /$project "$docroot"
 EOF
 } |
 sudo tee -- "$target"
+
+mkdir -p -- "$(dirname "$errorlog")" &&
+rm -f -- "$errorlog" &&
+touch -- "$errorlog" &&
+chmod 660 -- "$errorlog" &&
+sudo chgrp "$apachegroup" -- "$errorlog"
 
 sudo a2ensite "$project"
 sudo service apache2 reload
