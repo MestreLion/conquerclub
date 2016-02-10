@@ -39,22 +39,22 @@ Alias /$project "$docroot"
 	DirectoryIndex index.php index.html
 
 	<IfModule mod_php5.c>
-		php_flag   display_startup_errors  on
-		php_flag   display_errors          on
-		php_flag   html_errors             on
-		php_flag   track_errors            on
-		php_flag   log_errors              on
-		php_value  error_reporting         -1
-		php_value  error_log               "$errorlog"
-		php_value  log_errors_max_len      0
+		php_admin_flag   display_startup_errors  on
+		php_admin_flag   display_errors          on
+		php_admin_flag   html_errors             on
+		php_admin_flag   track_errors            on
+		php_admin_flag   log_errors              on
+		php_admin_value  error_reporting         -1
+		php_admin_value  error_log               "$errorlog"
+		php_admin_value  log_errors_max_len      0
 
 		# Already the default:
-#		php_flag   log_errors              on
-#		php_flag   report_memleaks         on
-#		php_flag   ignore_repeated_errors  off
-#		php_flag   ignore_repeated_source  off
-#		php_value  docref_root             0
-#		php_value  docref_ext              0
+#		php_admin_flag   log_errors              on
+#		php_admin_flag   report_memleaks         on
+#		php_admin_flag   ignore_repeated_errors  off
+#		php_admin_flag   ignore_repeated_source  off
+#		php_admin_value  docref_root             0
+#		php_admin_value  docref_ext              0
 	</IfModule>
 
 	<Files "phpinfo.php">
