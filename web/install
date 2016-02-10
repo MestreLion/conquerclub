@@ -16,7 +16,12 @@ cgibin=$mydir/cgi-bin
 errorlog=$mydir/php_errors.log
 
 target=/etc/apache2/sites-available/$project
-apachegroup=www-data
+apachegroup=$(
+	set +u
+	source /etc/apache2/envvars 2>/dev/null &&
+	echo "$APACHE_RUN_GROUP" ||
+	echo www-data
+)
 
 # Do stuff -------------------------------------------------------------------
 
