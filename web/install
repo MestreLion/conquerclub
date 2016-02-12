@@ -13,7 +13,9 @@ mydir=$(dirname "$(readlink -f "$0")")
 
 docroot=$mydir/www
 cgibin=$mydir/cgi-bin
-errorlog=$mydir/php_errors.log
+logdir=$mydir/log
+
+phplog=$logdir/php_errors.log
 
 target=/etc/apache2/sites-available/$project
 apachegroup=$(
@@ -23,7 +25,23 @@ apachegroup=$(
 	echo www-data
 )
 
-# Do stuff -------------------------------------------------------------------
+
+# Functions -------------------------------------------------------------------
+
+fatal()   { [[ "$1" ]] && echo "$myname: error: $1" >&2 ; exit ${2:-1} ; }
+
+create_log() {
+	local logfile=$1
+	local group=$2
+
+	touch -- "$logfile" &&
+	! [[ -d "$logfile" ]] &&
+	! [[ -h "$logfile" ]] &&
+	chmod 660 -- "$logfile" &&
+	sudo chgrp "$group" -- "$logfile"
+}
+
+# Do stuff --------------------------------------------------------------------
 
 sudo rm -f -- "$target"
 
@@ -45,7 +63,7 @@ Alias /$project "$docroot"
 		php_admin_flag   track_errors            on
 		php_admin_flag   log_errors              on
 		php_admin_value  error_reporting         -1
-		php_admin_value  error_log               "$errorlog"
+		php_admin_value  error_log               "$phplog"
 		php_admin_value  log_errors_max_len      0
 
 		# Already the default:
@@ -67,11 +85,8 @@ EOF
 } |
 sudo tee -- "$target"
 
-mkdir -p -- "$(dirname "$errorlog")" &&
-rm -f -- "$errorlog" &&
-touch -- "$errorlog" &&
-chmod 660 -- "$errorlog" &&
-sudo chgrp "$apachegroup" -- "$errorlog"
+mkdir -p -- "$logdir"
+create_log "$phplog" "$apachegroup" || fatal "error creating log file $phplog"
 
 sudo a2ensite "$project"
 sudo service apache2 reload
