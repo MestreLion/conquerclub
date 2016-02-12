@@ -19,17 +19,12 @@ apachelog=$logdir/apache_access.log
 phplog=$logdir/php_errors.log
 
 target=/etc/apache2/sites-available/$project
-apachegroup=$(
-	set +u
-	source /etc/apache2/envvars 2>/dev/null &&
-	echo "$APACHE_RUN_GROUP" ||
-	echo www-data
-)
 
 
 # Functions -------------------------------------------------------------------
 
 fatal()   { [[ "$1" ]] && echo "$myname: error: $1" >&2 ; exit ${2:-1} ; }
+exists()  { type "$@" >/dev/null 2>&1; }
 
 create_log() {
 	local logfile=$1
@@ -43,6 +38,17 @@ create_log() {
 }
 
 # Do stuff --------------------------------------------------------------------
+
+if ! exists apache2; then
+	sudo apt-get install apache2 php{5,-doc}
+fi
+
+apachegroup=$(
+	set +u
+	source /etc/apache2/envvars 2>/dev/null &&
+	echo "$APACHE_RUN_GROUP" ||
+	echo www-data
+)
 
 sudo rm -f -- "$target"
 
