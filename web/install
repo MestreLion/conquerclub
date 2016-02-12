@@ -107,7 +107,7 @@ CustomLog "$apachelog" combined env=$project
 	<Files "phpinfo.php">
 		order deny,allow
 		deny from all
-		allow from localhost 127.0.0.1
+		allow from $HOSTNAME localhost 127.0.0.1 ::1
 	</Files>
 </Directory>
 
