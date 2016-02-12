@@ -65,6 +65,9 @@ CustomLog "$apachelog" combined env=$project
 	IndexOptions FancyIndexing
 	DirectoryIndex index.php index.html
 
+	Order allow,deny
+	allow from all
+
 	<IfModule mod_php5.c>
 		php_admin_flag   display_startup_errors  on
 		php_admin_flag   display_errors          on
@@ -89,6 +92,11 @@ CustomLog "$apachelog" combined env=$project
 		deny from all
 		allow from localhost 127.0.0.1
 	</Files>
+</Directory>
+
+<Directory "$cgibin">
+	Order allow,deny
+	allow from all
 </Directory>
 EOF
 } |
