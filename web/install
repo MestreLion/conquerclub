@@ -15,6 +15,7 @@ docroot=$mydir/www
 cgibin=$mydir/cgi-bin
 logdir=$mydir/log
 
+apachelog=$logdir/apache_access.log
 phplog=$logdir/php_errors.log
 
 target=/etc/apache2/sites-available/$project
@@ -51,6 +52,14 @@ cat <<EOF
 
 ScriptAlias /$project/cgi-bin/ "$cgibin/"
 Alias /$project "$docroot"
+
+# Access Log
+# Will only work for vhosts with no CustomLog directive defined
+# Log file will always be created, but will be empty
+# Alternatively this could be included inside each vhost
+SetEnvIf Request_URI ^/$project(/|\$) $project
+CustomLog "$apachelog" combined env=$project
+
 <Directory "$docroot">
 	Options +Indexes
 	IndexOptions FancyIndexing
