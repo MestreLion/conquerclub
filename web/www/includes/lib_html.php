@@ -153,6 +153,12 @@ function HTML_Header($title="") {
 	</div>
 </div>
 <?}?>
+<?function HTML_AnimatedLoadURL($url, $id="1") {?>
+<div id="animatedloadurl_content_<?=$id?>" align="center"><img src="images/static/loading-animation-7.gif"></div>
+<script>
+$('#animatedloadurl_content_<?=$id?>').load('<?=$url?>');
+</script>
+<?}?>
 <?function HTML_Footer() {?>
 
 
