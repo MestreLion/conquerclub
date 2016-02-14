@@ -2,15 +2,17 @@
 <?include "includes/lib_common.php"?>
 <?include "includes/lib_html.php"?>
 <?php
-HTML_Header();
-HTML_Content_Title();
-HTML_Pagination();
+$page = get_int('page', 1);
+
+HTML_Header("Title");
+HTML_Content_Title("Game Finder", "Sorry for copying your layout bigWham, but I'm a programmer, not a designer ;)");
+HTML_Pagination($page, 10, 1234, "?page=", "top");
 HTML_List_Header();
 HTML_List_Item1();
 HTML_List_Item2();
 HTML_List_Item3();
 HTML_List_Footer();
-HTML_Pagination();
+HTML_Pagination(1, 1, 1, "https://www.conquerclub.com/player.php?submit=Search&order=D&p1=MestreLion&p2=Yellow+Peril&page=", "bottom");
 HTML_Footer();
 ?>
 <?function HTML_List_Header() {?>
