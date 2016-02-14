@@ -18,6 +18,9 @@ NR == 1 {
 	else
 		class = "odd"
 
+	if ($NF == "TOTAL")
+		class = class " bold-black"
+
 	gsub("\t", "</td>\t<td>")
 	printf("<tr class=\"" class "\">\t<td>" $0 "</td>\t</tr>\n")
 }
