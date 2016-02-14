@@ -1,9 +1,14 @@
 <?php
-function HTML_Header() {
+function HTML_Header($title="") {
+	global $APP;
+
+	if ($title)
+		$title = " :: $title";
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<title>MestreLion's ConquerClub Tools</title>
+	<title><?=$APP['HTML_Title']?><?=$title?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="description" content="Tools for ConquerClub players" />
 	<meta name="keywords" content="conquer club,risk" />
@@ -43,7 +48,7 @@ function HTML_Header() {
 
 <div id="mainheader">
 	<div id="mainNavAndLogo">
-		<div id=CC_mainlogo><a href="template.html"><img src="images/static/cc_logo.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
+		<div id=CC_mainlogo><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/cc_logo.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
 		<div id=mainNav>
 			<li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li>
 		</div>
@@ -54,8 +59,8 @@ function HTML_Header() {
 		<li><a href="">RULES</a></li><br />
 	</div>
 </div>
-<div id="mainheader_mobile" >
-	<div id=CC_mainlogo_mobile><a href=""><img src="images/static/icon.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
+<div id="mainheader_mobile">
+	<div id=CC_mainlogo_mobile><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/icon.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
 	<div id=mainNav_mobile>
 		<span><a>MestreLion's ConquerClub Tools</a></span>
 	</div>
@@ -71,7 +76,7 @@ function HTML_Header() {
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
 		<span id="servertime">Jan 31, 18:46:31 CCT</span>
 	</div>
-	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="/conquerclub">logout <b>MestreLion</b></a>]</p>
+	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b>MestreLion</b></a>]</p>
 
 	<h3>Game Menu</h3>
 	<ul>
@@ -128,32 +133,35 @@ function HTML_Header() {
 				<div class="inside">
 <!--- middle (main content) column begin -->
 <?}?>
-<?function HTML_Content_Title() {?>
-<h2>Game Finder</h2>
+<?function HTML_Content_Title($title="Results", $subtitle="Here are all the results that match your search criteria:") {?>
+<h2><?=$title?></h2>
 <div id="headerline">&nbsp;</div>
-
-<p>Here are all the games that match your search criteria:</p>
+<?if ($subtitle) {?>
+<p><?=$subtitle?></p>
 <?}?>
-<?function HTML_Pagination() {?>
+<?}?>
+<?function HTML_Pagination($page=1, $totalpages=1, $results=0, $url='?page=', $topbottom="top") {?>
+<?if ($topbottom == "top") {?>
 <script type="text/javascript">
-	var totalPages = 9;
-	var currentPage = 5;
-	var gotoUrl = "https://www.conquerclub.com/player.php?submit=Search&order=D&p1=MestreLion&p2=Yellow+Peril";
+	var totalPages = <?=$totalpages?>;
+	var currentPage = <?=$page?>;
+	var gotoUrl = "<?=$url?>";
 </script>
+<?}?>
 <div class="ccpagination">
-	<span class="search_results">3 results on 10 pages:</span>
-	<a href="" class="firstLast">&lt;&lt;</a>
-	<a href="" class="nextPrev">&lt;</a>
-	<span class="current_page">Page 5</span>
-	<a href="" class="nextPrev">&gt;</a>
-	<a href="" class="firstLast">&gt;&gt;</a>
-	<a href="#" onclick="togglePagePicker('top'); return false;" class="dropdown">&nbsp;<img src="images/static/pagination_open.gif" alt="v" />&nbsp;</a>
-	<div id="page_picker_top" class="page_picker" style="display:none">
+	<span class="search_results"><?=$results?> results on <?=$totalpages?> pages:</span>
+	<a href="<?=$url?>1" class="firstLast<?=($page<=1)?' disabled':''?>">&lt;&lt;</a>
+	<a href="<?=$url?><?=$page-1?>" class="nextPrev<?=($page<=1)?' disabled':''?>">&lt;</a>
+	<span class="current_page">Page <?=$page?></span>
+	<a href="<?=$url?><?=$page+1?>" class="nextPrev<?=($page>=$totalpages)?' disabled':''?>">&gt;</a>
+	<a href="<?=$url?><?=$totalpages?>" class="firstLast<?=($page>=$totalpages)?' disabled':''?>">&gt;&gt;</a>
+	<a href="#" onclick="togglePagePicker('<?=$topbottom?>'); return false;" class="dropdown<?=($totalpages<=1)?' disabled':''?>">&nbsp;<img src="images/static/pagination_open.gif" alt="v" />&nbsp;</a>
+	<div id="page_picker_<?=$topbottom?>" class="page_picker" style="display:none">
 		<h4 style="text-align:center">Go to page...</h4>
-		<input type="button" value="&lt;" onmousedown="startTicker(-1, 'top');" class="ticker_button" />
-		<input type="text" id="page_picker_input_top" size="4" onkeydown="keyCheck(event, 'top');" />
-		<input type="button" value="&gt;" onmousedown="startTicker(1, 'top');" class="ticker_button" />
-		<input type="button" value="Go" onclick="gotoPage('top');" class="page_picker_button" />
+		<input type="button" value="&lt;" onmousedown="startTicker(-1, '<?=$topbottom?>');" class="ticker_button" />
+		<input type="text" id="page_picker_input_<?=$topbottom?>" size="4" onkeydown="keyCheck(event, '<?=$topbottom?>');" />
+		<input type="button" value="&gt;" onmousedown="startTicker(1, '<?=$topbottom?>');" class="ticker_button" />
+		<input type="button" value="Go" onclick="gotoPage('<?=$topbottom?>');" class="page_picker_button" />
 	</div>
 </div>
 <?}?>
