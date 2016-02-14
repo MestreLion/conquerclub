@@ -57,6 +57,7 @@ now()     { date +%s.%N; }
 # Main functions --------------------------------------------------------------
 
 usage() {
+	if [[ "${1:-}" ]] ; then exec >&2; fi
 	cat <<-USAGE
 	Usage: $myname [options] PLAYERNAME
 	USAGE
