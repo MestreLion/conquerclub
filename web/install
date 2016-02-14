@@ -121,7 +121,7 @@ CustomLog "$apachelog" combined env=$project
 #		php_admin_flag   session.use_trans_sid   off
 	</IfModule>
 
-	<Files "phpinfo.php">
+	<Files ~ "(phpinfo|error)\\.php\$">
 		$localstr
 	</Files>
 </Directory>

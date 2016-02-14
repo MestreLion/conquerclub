@@ -110,6 +110,7 @@ function HTML_Header($title="") {
 		<li><a href="template.html">HTML Template</a></li>
 		<li><a href="template.php">PHP Template</a></li>
 		<li><a href="phpinfo.php">PHP Info</a></li>
+		<li><a href="error.php">Error Test</a></li>
 	</ul>
 </div>
 <!--- left column end -->
