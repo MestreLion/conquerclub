@@ -3,6 +3,10 @@
 BEGIN {
 	FS = "\t"
 	RS = "\n"
+	if (split(mark, amark, ",") == 2) {
+		markfield = amark[1]
+		marktext  = amark[2]
+	}
 }
 
 NR == 1 {
@@ -20,6 +24,9 @@ NR == 1 {
 
 	if ($NF == "TOTAL")
 		class = class " bold-black"
+
+	if (markfield && $markfield == marktext)
+		class = class " bold-red"
 
 	gsub("\t", "</td>\t<td>")
 	printf("<tr class=\"" class "\">\t<td>" $0 "</td>\t</tr>\n")
