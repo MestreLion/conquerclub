@@ -6,15 +6,20 @@ BEGIN {
 }
 
 NR == 1 {
-	printf("<table border=1>\n<tr>\t<th>")
+	printf("<table class=\"listing\">\n<tr>\t<th>")
 	gsub("\t", "</th>\t<th>")
 	printf($0 "</th>\t</tr>\n")
 	next
 }
 
 {
+	if (NR % 2)
+		class = "even"
+	else
+		class = "odd"
+
 	gsub("\t", "</td>\t<td>")
-	printf("<tr>\t<td>" $0 "</td>\t</tr>\n")
+	printf("<tr class=\"" class "\">\t<td>" $0 "</td>\t</tr>\n")
 }
 
 END {
