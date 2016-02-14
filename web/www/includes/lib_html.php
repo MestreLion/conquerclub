@@ -58,11 +58,7 @@ function HTML_Header($title="") {
 			<li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li>
 		</div>
 	</div>
-	<div id="rightNav">
-		<li><a href="">FORUM</a></li><br />
-		<li><a href="">HELP</a></li><br />
-		<li><a href="">RULES</a></li><br />
-	</div>
+	<div id="rightNav"></div>
 </div>
 <div id="mainheader_mobile">
 	<div id=CC_mainlogo_mobile><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/icon.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
@@ -83,52 +79,37 @@ function HTML_Header($title="") {
 	</div>
 	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b>MestreLion</b></a>]</p>
 
-	<h3>Game Menu</h3>
+	<h3>Main Tools</h3>
 	<ul>
-		<li><a href="">Central Command</a></li>
-		<li><a href="">Join Games</a></li>
-		<li><a href="">Start Games</a></li>
-		<li><a href="">Game Finder</a></li>
-		<li><a href="">Battle Royale</a></li>
-		<li><a href="">Other Games</a></li>
+		<li><a href="maprank.php">Map Rank</a></li>
+	</ul>
+
+	<h3>Clan League 7</h3>
+	<ul>
+		<li><a href="cl7scoreboard.php">Scoreboards</a></li>
+		<li><a href="cl7player.php">Player Rank</a></li>
 	</ul>
 
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
-		<li><a title='Clans: February Platoon Report is here!' href=''><span class='player6'>&bull;</span>February Platoon Report is here!</a></li>
-		<li><a title='Events: Official February Challenge -- Febenario!' href=''><span class='player5'>&bull;</span>Official February Challenge -- Febenario!</a></li>
-		<li><a title='Tournaments: Fight For a Beer' href=''><span class='player7'>&bull;</span>Fight For a Beer</a></li>
-		<li class=announcements style='display:none;'><a title='Events: Monumental Battle Royale Game Reforged' href=''><span class='player5'>&bull;</span>Monumental Battle Royale Game Reforged</a></li>
-		<li class=announcements style='display:none;'><a title='Community: Congrats to GreenBaize on SOS Africa II Triumph' href=''><span class='player2'>&bull;</span>Congrats to GreenBaize on SOS Africa II Triumph</a></li>
-		<li class=announcements style='display:none;'><a title='Events: Five tourneys left for Decade in Review Challenge' href=''><span class='player5'>&bull;</span>Five tourneys left for Decade in Review Challenge</a></li>
-		<li class=announcements style='display:none;'><a title='Tournaments: Quads Teams Needed for New TPA tourney.' href=''><span class='player7'>&bull;</span>Quads Teams Needed for New TPA tourney.</a></li>
-		<li class=announcements style='display:none;'><a title='Community: Say Something Nice' href=''><span class='player2'>&bull;</span>Say Something Nice</a></li>
-		<li class=announcements style='display:none;'><a title='Community: Congratulations to all the Olympic Medalists' href=''><span class='player2'>&bull;</span>Congratulations to all the Olympic Medalists</a></li>
-		<li class=announcements style='display:none;'><a title='Webmaster: CC Will Soon Celebrate its Tenth Birthday!' href=''><span class='player1'>&bull;</span>CC Will Soon Celebrate its Tenth Birthday!</a></li>
-		<li class=announcements style='display:none;'><a title='Maps: WWI Gallipoli has been Quenched!' href=''><span class='player3'>&bull;</span>WWI Gallipoli has been Quenched!</a></li>
-		<li class=announcements style='display:none;'><a title='Maps: Beta testers needed for new maps.' href=''><span class='player3'>&bull;</span>Beta testers needed for new maps.</a></li>
-		<li class=announcements style='display:none;'><a title='Webmaster: New Campaigns!' href=''><span class='player1'>&bull;</span>New Campaigns!</a></li>
-		<li class=announcements style='display:none;'><a title='Maps: Open callout for Foundry Volunteers' href=''><span class='player3'>&bull;</span>Open callout for Foundry Volunteers</a></li>
+		<li><a title="New site layout!" href=""><span class='player6'>&bull;&nbsp;</span>New site layout!</a></li>
+		<li class=announcements style='display:none;'><a title="No more news" href=""><span class='player5'>&bull;&nbsp;</span>No more news</a></li>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
 
-	<h3>Interaction Menu</h3>
+	<h3>Conquer Club</h3>
 	<ul>
-		<li><a href="">Forum</a></li>
-		<li><a href="">Chat Rooms</a></li>
-		<li><a href="">Inbox<span id="privmsg"></span></a></li>
-		<li><a href="">Wall<span id="wall"></span></a></li>
-		<li><a href="">My Ratings</a></li>
+		<li><a href="https://www.conquerclub.com/player.php?mode=mygames1">Central Command</a></li>
+		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&un=MestreLion">Profile</a></li>
+		<li><a href="https://www.conquerclub.com/forum/index.php">Forum</a></li>
+		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=571">PACK Forum</a></li>
 	</ul>
-	<h3>Personal Menu</h3>
+
+	<h3>Development</h3>
 	<ul>
-		<li><a href="">Store</a></li>
-		<li><a href="">Control Panel</a></li>
-		<li><a href="">Settings</a></li>
-		<li><a href="">Referral Program</a></li>
-		<li><a href="">Dice Stats</a></li>
-		<li><a href="">Medal Stats</a></li>
-		<li><a href="">Inventory</a></li>
+		<li><a href="template.html">HTML Template</a></li>
+		<li><a href="template.php">PHP Template</a></li>
+		<li><a href="phpinfo.php">PHP Info</a></li>
 	</ul>
 </div>
 <!--- left column end -->
