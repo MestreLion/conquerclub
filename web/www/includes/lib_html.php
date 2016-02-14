@@ -117,14 +117,16 @@ function HTML_Header($title="") {
 			</div>
 			<div id="middleColumn">
 				<div class="inside">
+
+
+
+
 <!--- middle (main content) column begin -->
 <?}?>
 <?function HTML_Content_Title($title="Results", $subtitle="Here are all the results that match your search criteria:") {?>
 <h2><?=$title?></h2>
 <div id="headerline">&nbsp;</div>
-<?if ($subtitle) {?>
 <p><?=$subtitle?></p>
-<?}?>
 <?}?>
 <?function HTML_Pagination($page=1, $totalpages=1, $results=0, $url='?page=', $topbottom="top") {?>
 <?if ($topbottom == "top") {?>
@@ -152,7 +154,12 @@ function HTML_Header($title="") {
 </div>
 <?}?>
 <?function HTML_Footer() {?>
+
+
+
+
 <!--- middle (main content) column end -->
+				<br />
 				</div>
 			</div>
 			<div class="clear"></div>
