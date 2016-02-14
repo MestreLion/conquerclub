@@ -5,6 +5,11 @@ function HTML_Header($title="") {
 	if ($title)
 		$title = " :: $title";
 
+	// CCT = EST (but actually calculated CST+1, so DST kicks in at a different hour)
+	$cctime = new DateTime(null, new DateTimeZone('America/New_York'));
+	$currenttime = $cctime->format("M d Y, H:i:s");
+	$currenttime_html = $cctime->format("M d, H:i:s");
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -35,7 +40,7 @@ function HTML_Header($title="") {
 		var is_mobile_device = false;
 		var is_new_recruit = false;
 		var is_new_player = false;
-		var currenttime = 'Jan 31 2016, 18:46:31';
+		var currenttime = '<?=$currenttime?>';
 		var GameHideNav = 'N';
 	</script>
 	<script type="text/javascript" src="js/common.js"></script>
@@ -74,7 +79,7 @@ function HTML_Header($title="") {
 <!--- left column begin -->
 <div class="vnav" id="leftnav">
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
-		<span id="servertime">Jan 31, 18:46:31 CCT</span>
+		<span id="servertime"><?=$currenttime_html?> CCT</span>
 	</div>
 	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b>MestreLion</b></a>]</p>
 
