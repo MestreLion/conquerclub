@@ -8,9 +8,14 @@ HTML_Header("Title");
 HTML_Content_Title("Game Finder", "Sorry for copying your layout bigWham, but I'm a programmer, not a designer ;)");
 HTML_Pagination($page, 10, 1234, "?page=", "top");
 HTML_List_Header();
-HTML_List_Item1();
-HTML_List_Item2();
-HTML_List_Item3();
+for($i=1; $i<=3; $i++) {
+	$oddeven = ($i % 2) ? "odd" : "even";
+	switch ($i) {
+		case 1: HTML_List_Item1($oddeven); break;
+		case 2: HTML_List_Item2($oddeven); break;
+		case 3: HTML_List_Item3($oddeven); break;
+	}
+}
 HTML_List_Footer();
 HTML_Pagination(1, 1, 1, "https://www.conquerclub.com/player.php?submit=Search&order=D&p1=MestreLion&p2=Yellow+Peril&page=", "bottom");
 HTML_Footer();
@@ -26,11 +31,13 @@ HTML_Footer();
 		<th>Players</th>
 	</tr>
 <?}?>
-<?function HTML_List_Item1() {?>
-	<tr class="odd2">
+<?function HTML_List_Item1($oddeven="odd", $tournament=true) {?>
+	<?if ($tournament) {?>
+	<tr class="<?=$oddeven?>2">
 		<td colspan="7"><b>Tournament Game: <a href="">2016 [Jan] [CC6] PACK vs FISO</a> - FISO Set 1 - 12 hour fog rule</b></td>
 	</tr>
-	<tr class="odd">
+	<?}?>
+	<tr class="<?=$oddeven?>">
 		<td style='vertical-align:top;' align="center">
 			<span class="gameno">16254463</span>
 			<a class="gameno" href="">Enter Game</a>
@@ -66,8 +73,8 @@ HTML_Footer();
 		</td>
 	</tr>
 <?}?>
-<?function HTML_List_Item2() {?>
-	<tr class="even">
+<?function HTML_List_Item2($oddeven="even") {?>
+	<tr class="<?=$oddeven?>">
 		<td style='vertical-align:top;' align="center">
 			<span class="gameno">16198006</span>
 			<a class="gameno" href="">Enter Game</a>
@@ -105,8 +112,8 @@ HTML_Footer();
 		</td>
 	</tr>
 <?}?>
-<?function HTML_List_Item3() {?>
-	<tr class="odd">
+<?function HTML_List_Item3($oddeven="odd") {?>
+	<tr class="<?=$oddeven?>">
 		<td style='vertical-align:top;' align="center">
 			<span class="gameno">15435391</span>
 			<a class="gameno" href="">Enter Game</a>
