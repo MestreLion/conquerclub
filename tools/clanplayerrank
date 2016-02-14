@@ -165,13 +165,15 @@ searchdata="search_clan1=${clan}${league:+&search_clanleague=$league}"
 
 # Main logic and procedures ---------------------------------------------------
 
+header "Reading games..."
+
 while read -r url first name; do
 	if ((first)); then
 		side="home"
 	else
 		side="away"
 	fi
-	header "Reading $side games from $name"
+	{
 	wget -qO- "${urlcc}${url}" |
 	awk  -v q="'" -v ok="$first" '
 	BEGIN {
@@ -195,7 +197,9 @@ while read -r url first name; do
 		print id, $2, score[1], score[2]
 		if($4) exit
 	}
-	! ok && $4 { ok = 1 }' &
+	! ok && $4 { ok = 1 }'
+	header "Read $side games from $name"
+	} &
 done < <(
 	wget -qO- --post-data "$searchdata&search_status=" "$urlsearch" |
 	awk -v q="'" -v clanid="$clan" '
