@@ -85,14 +85,9 @@ SetEnvIf Request_URI ^/$project(/|\$) $project
 CustomLog "$apachelog" combined env=$project
 
 <Directory "$docroot">
-	Options +Indexes +Includes
+	Options +Indexes
 	IndexOptions FancyIndexing
 	DirectoryIndex index.php index.html
-
-	<IfModule mod_include.c>
-		AddType text/html .shtml
-		AddOutputFilter INCLUDES .php .shtml
-	</IfModule>
 
 	$allowstr
 
@@ -149,6 +144,5 @@ sudo tee -- "$target"
 mkdir -p -- "$logdir"
 create_log "$phplog" "$apachegroup" || fatal "error creating log file $phplog"
 
-sudo a2enmod include
 sudo "$enablecmd" "$project"
 sudo service apache2 reload
