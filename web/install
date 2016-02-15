@@ -65,7 +65,6 @@ else
 	localstr="Order deny,allow
 		Deny from all
 		Allow from $HOSTNAME localhost 127.0.0.1 ::1"
-
 fi
 
 sudo rm -f -- "$target"
@@ -107,6 +106,7 @@ CustomLog "$apachelog" combined env=$project
 		php_admin_flag   allow_url_fopen         off
 		php_admin_flag   file_uploads            off
 		php_admin_flag   expose_php              off
+		php_admin_flag   session.cookie_httponly on
 		php_admin_value  open_basedir            "$docroot/:$cgibin/:/tmp/:/var/tmp/"
 
 		# Already the default:
