@@ -3,4 +3,21 @@ toolsdir="$(readlink -f "$mydir"/../../tools)"
 
 export PATH=$PATH:"$toolsdir"
 
+declare -A GET
+
+parse_get() {
+	OFS="$IFS"
+	IFS="&"
+	set -- $QUERY_STRING
+	local array=("$@")
+	for param in "${array[@]}"; do
+		IFS="="
+		set -- $param
+		GET["$1"]="${2//+/ }"
+	done
+	IFS="$OFS"
+}
+
+parse_get
+
 printf 'Content-type: text/html\n\n'
