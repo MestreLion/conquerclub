@@ -77,7 +77,7 @@ function HTML_Header($title="") {
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
 		<span id="servertime"><?=$currenttime_html?> CCT</span>
 	</div>
-	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b>MestreLion</b></a>]</p>
+	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b><?=htmlspecialchars(session('username'))?></b></a>]</p>
 
 	<h3>Main Tools</h3>
 	<ul>
@@ -100,7 +100,7 @@ function HTML_Header($title="") {
 	<h3>Conquer Club</h3>
 	<ul>
 		<li><a href="https://www.conquerclub.com/player.php?mode=mygames1">Central Command</a></li>
-		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&un=MestreLion">Profile</a></li>
+		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&un=<?=urlencode(session('username'))?>">Profile</a></li>
 		<li><a href="https://www.conquerclub.com/forum/index.php">Forum</a></li>
 		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=571">PACK Forum</a></li>
 	</ul>

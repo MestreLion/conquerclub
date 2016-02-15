@@ -11,4 +11,8 @@ function get_int($var, $default=0) {
 function get($var, $default="") {
 	return get_str($var, $default);
 }
+
+function session($var, $default="") {
+	return isset($_SESSION[$var]) ? $_SESSION[$var] : $default;
+}
 ?>

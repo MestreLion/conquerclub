@@ -4,7 +4,7 @@
 <?php
 
 # Default values
-$player = get("player", "MestreLion");
+$player = get("player", session("username"));
 $types  = get("type", array('P', 'D', 'T', 'Q'));
 
 HTML_Header("Map Rank");
