@@ -77,7 +77,7 @@ function HTML_Header($title="") {
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
 		<span id="servertime"><?=$currenttime_html?> CCT</span>
 	</div>
-	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="<?=$APP['VirtualPath']?>">logout <b><?=htmlspecialchars(session('username'))?></b></a>]</p>
+	<p style='margin-bottom:0px;width:100%;display: inline-block; text-align:center;'>[<a href="logout.php">logout <b><?=htmlspecialchars(session('username'))?></b></a>]</p>
 
 	<h3>Main Tools</h3>
 	<ul>
