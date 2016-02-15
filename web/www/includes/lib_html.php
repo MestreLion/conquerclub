@@ -53,7 +53,7 @@ function HTML_Header($title="") {
 
 <div id="mainheader">
 	<div id="mainNavAndLogo">
-		<div id=CC_mainlogo><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/cc_logo.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
+		<div id=CC_mainlogo><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/cc_logo.png" alt="<?=$APP['HTML_Title']?>" title="<?=$APP['HTML_Title']?>" /></a></div>
 		<div id=mainNav>
 			<li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li>
 		</div>
@@ -61,9 +61,9 @@ function HTML_Header($title="") {
 	<div id="rightNav"></div>
 </div>
 <div id="mainheader_mobile">
-	<div id=CC_mainlogo_mobile><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/icon.png" alt="MestreLion's Conquer Club Tools" title="MestreLion's ConquerClub Tools" /></a></div>
+	<div id=CC_mainlogo_mobile><a href="<?=strtok($_SERVER["REQUEST_URI"],'?')?>"><img src="images/static/icon.png" alt="<?=$APP['HTML_Title']?>" title="<?=$APP['HTML_Title']?>" /></a></div>
 	<div id=mainNav_mobile>
-		<span><a>MestreLion's ConquerClub Tools</a></span>
+		<span><a><?=$APP['HTML_Title']?></a></span>
 	</div>
 </div>
 
