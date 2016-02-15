@@ -4,4 +4,10 @@ if [[ -f common ]]; then
 	source common
 fi
 
-clanplayerrank -q | htmltable -v mark=4,MestreLion
+htmltableparams=()
+
+if [[ "${GET[player]}" ]]; then
+	htmltableparams+=(-v mark=4,"${GET[player]}")
+fi
+
+clanplayerrank -q | htmltable "${htmltableparams[@]}"
