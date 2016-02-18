@@ -13,10 +13,12 @@ function HTML_Header($title="") {
 	// Annoucements
 	$announcements = array();
 	if (($fd = @fopen($APP['DataDir'] . "/announcements.txt", "r"))) {
-		while (($announcement = fgetcsv($fd, 1000, "\t"))) {
+		$i = 0;
+		while (($announcement = fgetcsv($fd, 1000, "\t")) && (++$i <= $APP['MaxAnnouncements'])) {
 			$announcements[] = array(
 				"title"  => $announcement[0],
 				"url"    => count($announcement) > 1 ? $announcement[1] : "",
+				"hidden" => ($i > $APP['VisibleAnnouncements']),
 				"style"  => "1",
 			);
 		}
@@ -107,10 +109,9 @@ function HTML_Header($title="") {
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
 		<?foreach($announcements as $announcement) {?>
-		<li><a title="<?=htmlspecialchars($announcement['title'])?>" href="<?=urlencode($announcement['url'])?>">
+		<li<?if($announcement['hidden']){?> class=announcements style="display:none;"<?}?>><a title="<?=htmlspecialchars($announcement['title'])?>" href="<?=urlencode($announcement['url'])?>">
 		<span class="player<?=$announcement['style']?>">&bull;&nbsp;</span><?=htmlspecialchars($announcement['title'])?></a></li>
 		<?}?>
-		<li class=announcements style='display:none;'><a title="No more news" href=""><span class='player5'>&bull;&nbsp;</span>No more news</a></li>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
 	<?}?>

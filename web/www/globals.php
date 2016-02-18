@@ -11,6 +11,9 @@ $APP = array(
 	"VirtualPath" => "/conquerclub",
 	"Environment" => "desktop",
 	"DataDir"     => $_SERVER["DATA_DIR"],
+
+	"VisibleAnnouncements" =>  3,
+	"MaxAnnouncements"     => 10,
 );
 
 # Session vars
