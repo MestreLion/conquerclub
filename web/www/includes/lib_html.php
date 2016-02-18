@@ -10,6 +10,19 @@ function HTML_Header($title="") {
 	$currenttime = $cctime->format("M d Y, H:i:s");
 	$currenttime_html = $cctime->format("M d, H:i:s");
 
+	// Annoucements
+	$announcements = array();
+	if (($fd = @fopen($APP['DataDir'] . "/announcements.txt", "r"))) {
+		while (($announcement = fgetcsv($fd, 1000, "\t"))) {
+			$announcements[] = array(
+				"title"  => $announcement[0],
+				"url"    => count($announcement) > 1 ? $announcement[1] : "",
+				"style"  => "1",
+			);
+		}
+		fclose($fd);
+	}
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -90,20 +103,17 @@ function HTML_Header($title="") {
 		<li><a href="cl7player.php">Player Rank</a></li>
 	</ul>
 
-<?	if (($announcements = @fopen($APP['DataDir'] . "/announcements.txt", "r"))) {?>
+	<?if ($announcements) {?>
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
-<?		while (($announcement = fgetcsv($announcements, 1000, "\t"))) {
-?>
-		<li><a title="<?=htmlspecialchars($announcement[0])?>" href="<?=count($announcement)>1 ? urlencode($announcement[1]) : ''?>">
-		<span class="player1">&bull;&nbsp;</span><?=htmlspecialchars($announcement[0])?></a></li>
-<?		}
-		fclose($announcements);
-	}
-?>
+		<?foreach($announcements as $announcement) {?>
+		<li><a title="<?=htmlspecialchars($announcement['title'])?>" href="<?=urlencode($announcement['url'])?>">
+		<span class="player<?=$announcement['style']?>">&bull;&nbsp;</span><?=htmlspecialchars($announcement['title'])?></a></li>
+		<?}?>
 		<li class=announcements style='display:none;'><a title="No more news" href=""><span class='player5'>&bull;&nbsp;</span>No more news</a></li>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
+	<?}?>
 
 	<h3>Conquer Club</h3>
 	<ul>
