@@ -10,6 +10,7 @@ $APP = array(
 	"HTML_Title"  => "MestreLion's ConquerClub Tools",
 	"VirtualPath" => "/conquerclub",
 	"Environment" => "desktop",
+	"DataDir"     => $_SERVER["DATA_DIR"],
 );
 
 # Session vars

@@ -13,6 +13,7 @@ myname=${0##*/}
 mydir=$(dirname "$(readlink -f "$0")")
 
 docroot=$mydir/www
+datadir=$mydir/data
 cgibin=$mydir/cgi-bin
 logdir=$mydir/log
 
@@ -107,7 +108,7 @@ CustomLog "$apachelog" combined env=$project
 		php_admin_flag   file_uploads            off
 		php_admin_flag   expose_php              off
 		php_admin_flag   session.cookie_httponly on
-		php_admin_value  open_basedir            "$docroot/:$cgibin/:/tmp/:/var/tmp/"
+		php_admin_value  open_basedir            "$docroot/:$datadir/:/tmp/:/var/tmp/"
 
 		# Already the default:
 #		php_admin_flag   log_errors              on
@@ -124,6 +125,9 @@ CustomLog "$apachelog" combined env=$project
 	<Files ~ "(phpinfo|error)\\.php\$">
 		$localstr
 	</Files>
+
+	# Env vars for PHP
+	SetEnv DATA_DIR  "$datadir"
 </Directory>
 
 <Directory "$cgibin">
