@@ -90,9 +90,17 @@ function HTML_Header($title="") {
 		<li><a href="cl7player.php">Player Rank</a></li>
 	</ul>
 
+<?	if (($announcements = @fopen($APP['DataDir'] . "/announcements.txt", "r"))) {?>
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
-		<li><a title="New site layout!" href=""><span class='player6'>&bull;&nbsp;</span>New site layout!</a></li>
+<?		while (($announcement = fgetcsv($announcements, 1000, "\t"))) {
+?>
+		<li><a title="<?=htmlspecialchars($announcement[0])?>" href="<?=count($announcement)>1 ? urlencode($announcement[1]) : ''?>">
+		<span class="player1">&bull;&nbsp;</span><?=htmlspecialchars($announcement[0])?></a></li>
+<?		}
+		fclose($announcements);
+	}
+?>
 		<li class=announcements style='display:none;'><a title="No more news" href=""><span class='player5'>&bull;&nbsp;</span>No more news</a></li>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
