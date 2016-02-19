@@ -211,6 +211,7 @@ $('#animatedloadurl_content_<?=$id?>').load('<?=$url?>');
 				<div id=footer_nav class=footerNav   style='display: table-cell;height:30px;vertical-align:middle;'>
 					<a href="https://www.conquerclub.com">Conquer Club</a> |
 					<a href="/">Rodrigo Silva</a> |
+					<a href="https://github.com/MestreLion/conquerclub">Github Project</a> |
 					<a href="mailto:conquerclub@rodrigosilva.com">Contact</a>
 				</div>
 			</td>
