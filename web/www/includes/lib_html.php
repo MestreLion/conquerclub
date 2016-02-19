@@ -201,7 +201,7 @@ $('#animatedloadurl_content_<?=$id?>').load('<?=$url?>');
 		<tr height=40>
 			<td align=left valign=center>
 				<div id=footer_nav class=footerNav   style='display: table-cell;height:30px;vertical-align:middle;'>
-					<a href="https://www.conquerclub.com/player.php?mode=mygames1">Conquer Club</a> |
+					<a href="https://www.conquerclub.com">Conquer Club</a> |
 					<a href="/">Rodrigo Silva</a> |
 					<a href="mailto:conquerclub@rodrigosilva.com">Contact</a>
 				</div>
