@@ -124,6 +124,14 @@ function HTML_Header($title="") {
 		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=571">PACK Forum</a></li>
 	</ul>
 
+	<h3>Risk Tools</h3>
+	<ul>
+		<li><a href="http://gamesbyemail.com/games/gambit/battleodds">Gambit Battle Odds</a></li>
+		<li><a href="http://riskodds.com">RISK&copy; Odds Generator</a></li>
+		<li><a href="http://www.morningtoast.com/feature/risk/">Risk Dice Roller</a></li>
+		<li><a href="http://diceroll.stritar.net/risk.html">Dice Roll Simulation</a></li>
+	</ul>
+
 	<h3>Development</h3>
 	<ul>
 		<li><a href="template.html">HTML Template</a></li>
