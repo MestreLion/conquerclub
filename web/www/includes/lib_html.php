@@ -45,9 +45,9 @@ function HTML_Header($title="") {
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link rel="stylesheet" href="css/skidoo_too.min.css" type="text/css" />
 	<link rel="stylesheet" href="css/stylesheet.css" type="text/css" />
-	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<link   type="text/css"       href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"                          integrity="sha384-XxcvoeNF5V0ZfksTnV+bejnCsJjOOIzN6UVwF85WBsAnU3zeYh5bloN+L4WLgeNE" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"                    integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
+	<link rel="stylesheet"        href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" integrity="sha384-A/CgvDCSM2jOpa4G++hlEtzweAjg53uGXJLUnen/qb5faVDcN+vaHrL5czAdzhK8" crossorigin="anonymous"/>
 	<script type="text/javascript">
 		// Load local jquery as fallback if CDN is not available
 		// Use a single test for all files, assuming that if first fails all others will fail too
