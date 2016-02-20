@@ -38,13 +38,13 @@ function HTML_Header($title="") {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title><?=_H($APP['HTML_Title'])?><?=_H($title)?></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="description" content="Tools for ConquerClub players" />
-	<meta name="keywords" content="conquer club,risk" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="shortcut icon" href="favicon.ico" />
-	<link rel="stylesheet" href="css/skidoo_too.min.css" type="text/css" />
-	<link rel="stylesheet" href="css/stylesheet.css" type="text/css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="description" content="Tools for ConquerClub players"/>
+	<meta name="keywords"    content="conquer club,risk"/>
+	<meta name="viewport"    content="width=device-width, initial-scale=1"/>
+	<link rel="shortcut icon" href="favicon.ico"/>
+	<link rel="stylesheet" href="css/skidoo_too.min.css"/>
+	<link rel="stylesheet" href="css/stylesheet.css"/>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"                          integrity="sha384-XxcvoeNF5V0ZfksTnV+bejnCsJjOOIzN6UVwF85WBsAnU3zeYh5bloN+L4WLgeNE" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"                    integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
 	<link rel="stylesheet"        href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" integrity="sha384-A/CgvDCSM2jOpa4G++hlEtzweAjg53uGXJLUnen/qb5faVDcN+vaHrL5czAdzhK8" crossorigin="anonymous"/>
@@ -77,7 +77,7 @@ function HTML_Header($title="") {
 
 <div id="mainheader">
 	<div id="mainNavAndLogo">
-		<div id=CC_mainlogo><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/cc_logo.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>" /></a></div>
+		<div id=CC_mainlogo><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/cc_logo.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
 		<div id=mainNav>
 			<li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li>
 		</div>
@@ -85,7 +85,7 @@ function HTML_Header($title="") {
 	<div id="rightNav"></div>
 </div>
 <div id="mainheader_mobile">
-	<div id=CC_mainlogo_mobile><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/icon.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>" /></a></div>
+	<div id=CC_mainlogo_mobile><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/icon.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
 	<div id=mainNav_mobile>
 		<span><a><?=_H($APP['HTML_Title'])?></a></span>
 	</div>
@@ -182,7 +182,7 @@ function HTML_Header($title="") {
 	<span class="current_page">Page <?=_H($page)?></span>
 	<a href="<?=_H($url)?><?=_H($page+1)?>" class="nextPrev<?if ($page>=$totalpages) {?> disabled<?}?>">&gt;</a>
 	<a href="<?=_H($url)?><?=_H($totalpages)?>" class="firstLast<?if ($page>=$totalpages) {?> disabled<?}?>">&gt;&gt;</a>
-	<a href="#" onclick="togglePagePicker(<?=_H(_J($topbottom))?>); return false;" class="dropdown<?if ($totalpages<=1) {?> disabled<?}?>">&nbsp;<img src="images/static/pagination_open.gif" alt="v" />&nbsp;</a>
+	<a href="#" onclick="togglePagePicker(<?=_H(_J($topbottom))?>); return false;" class="dropdown<?if ($totalpages<=1) {?> disabled<?}?>">&nbsp;<img src="images/static/pagination_open.gif" alt="v"/>&nbsp;</a>
 	<div id="page_picker_<?=_H($topbottom)?>" class="page_picker" style="display:none">
 		<h4 style="text-align:center">Go to page...</h4>
 		<input type="button" value="&lt;" onmousedown="startTicker(-1, <?=_H(_J($topbottom))?>);" class="ticker_button"/>
@@ -204,7 +204,7 @@ $(<?=_J("#animatedloadurl_content_" . $id)?>).load(<?=_J($url)?>);
 
 
 <!--- middle (main content) column end -->
-				<br />
+				<br/>
 				</div>
 			</div>
 			<div class="clear"></div>
