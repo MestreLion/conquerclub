@@ -26,7 +26,7 @@ HTML_Footer();
 <legend>Search</legend>
 <div class="field-row">
 	<label class="field-label" for="player">Player</label>
-	<input type="text" class="field" name="player" id="player" maxlength="16" value="<?=htmlspecialchars($player)?>"/>
+	<input type="text" class="field" name="player" id="player" maxlength="16" value="<?=_H($player)?>"/>
 </div>
 <div class="field-row">
 	<span class="field-label">Game Type</span>
@@ -42,7 +42,7 @@ HTML_Footer();
 			'Q' => "Quadruples",
 		) as $type => $name) {
 ?>
-	<input type="checkbox" name="type[]" id="game_type_<?=$type?>" value="<?=$type?>"<?=in_array($type, $types)?" checked":""?>/><label for="game_type_<?=$type?>"><?=$name?></label>
+	<input type="checkbox" name="type[]" id="game_type_<?=$type?>" value="<?=$type?>"<?if (in_array($type, $types)) {?> checked="checked"<?}?>/><label for="game_type_<?=$type?>"><?=_H($name)?></label>
 <?
 	}
 ?>

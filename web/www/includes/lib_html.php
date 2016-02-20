@@ -77,16 +77,16 @@ function HTML_Header($title="") {
 
 <div id="mainheader">
 	<div id="mainNavAndLogo">
-		<div id=CC_mainlogo><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/cc_logo.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
-		<div id=mainNav>
-			<li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li>
+		<div id="CC_mainlogo"><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/cc_logo.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
+		<div id="mainNav">
+			<ul><li><a>Welcome to MestreLion's amazing ConquerClub humble tools!</a></li></ul>
 		</div>
 	</div>
 	<div id="rightNav"></div>
 </div>
 <div id="mainheader_mobile">
-	<div id=CC_mainlogo_mobile><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/icon.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
-	<div id=mainNav_mobile>
+	<div id="CC_mainlogo_mobile"><a href="<?=_H($APP['VirtualPath'])?>"><img src="images/static/icon.png" alt="<?=_H($APP['HTML_Title'])?>" title="<?=_H($APP['HTML_Title'])?>"/></a></div>
+	<div id="mainNav_mobile">
 		<span><a><?=_H($APP['HTML_Title'])?></a></span>
 	</div>
 </div>
@@ -95,7 +95,7 @@ function HTML_Header($title="") {
 	<div id="innerColumnContainer">
 		<div id="SOWrap">
 			<div id="leftColumn">
-				<div id=leftColumninner class="inside">
+				<div id="leftColumninner" class="inside">
 <!--- left column begin -->
 <div class="vnav" id="leftnav">
 	<div id="cctime" style="font-size:12px; font-weight:bold; color:black; display: inline-block; text-align:center;z-index:10;padding:0px;width:100%;">
@@ -118,16 +118,16 @@ function HTML_Header($title="") {
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
 <?		foreach($announcements as $i) {?>
-		<li<?if($i['hidden']){?> class=announcements style="display:none;"<?}?>><a title="<?=_H($i['title'])?>" href="<?=_H($i['url'])?>"><span class="player<?=_H($i['style'])?>">&bull;&nbsp;</span><?=_H($i['title'])?></a></li>
+		<li<?if($i['hidden']){?> class="announcements" style="display:none;"<?}?>><a title="<?=_H($i['title'])?>" href="<?=_H($i['url'])?>"><span class="player<?=_H($i['style'])?>">&bull;&nbsp;</span><?=_H($i['title'])?></a></li>
 <?		}?>
-		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
+		<li><a id="more" href="#" onclick="showannouncements(); return false;">More</a></li>
 	</ul>
 
 <?	}?>
 	<h3>Conquer Club</h3>
 	<ul>
 		<li><a href="https://www.conquerclub.com/player.php?mode=mygames1">Central Command</a></li>
-		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&un=<?=_U(session('username'))?>">Profile</a></li>
+		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&amp;un=<?=_U(session('username'))?>">Profile</a></li>
 		<li><a href="https://www.conquerclub.com/forum/index.php">Forum</a></li>
 		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=571">PACK Forum</a></li>
 	</ul>
@@ -193,9 +193,9 @@ function HTML_Header($title="") {
 </div>
 <?}?>
 <?function HTML_AnimatedLoadURL($url, $id="1") {?>
-<div id="animatedloadurl_content_<?=_H($id)?>" align="center"><img src="images/static/loading-animation-7.gif"></div>
-<script>
-$(<?=_J("#animatedloadurl_content_" . $id)?>).load(<?=_J($url)?>);
+<div id="animatedloadurl_content_<?=_H($id)?>" align="center"><img src="images/static/loading-animation-7.gif" alt="loading..."/></div>
+<script type="text/javascript">
+$(<?=_J("#animatedloadurl_content_" . $id)?>).load(<?=_J(_H($url))?>.replace(/\x26amp;/g, "\x26"));
 </script>
 <?}?>
 <?function HTML_Footer() {?>
@@ -216,27 +216,27 @@ $(<?=_J("#animatedloadurl_content_" . $id)?>).load(<?=_J($url)?>);
 
 <!-- footer begin -->
 <div id="footer">
-	<table width=100% border=0>
-		<tr height=40>
-			<td align=left valign=center>
-				<div id=footer_nav class=footerNav   style='display: table-cell;height:30px;vertical-align:middle;'>
+	<table width="100%" border="0">
+		<tr style="height: 40px;">
+			<td align="left" valign="middle">
+				<div id="footer_nav" class="footerNav" style="display: table-cell;height:30px;vertical-align:middle;">
 					<a href="https://www.conquerclub.com">Conquer Club</a> |
 					<a href="/">Rodrigo Silva</a> |
 					<a href="https://github.com/MestreLion/conquerclub">Github Project</a> |
 					<a href="mailto:conquerclub@rodrigosilva.com">Contact</a>
 				</div>
 			</td>
-			<td width=20></td>
-			<td align=center>
-				<div id=footer_copyright style='width:100%;text-align:center;display: table-cell;height:30px;vertical-align:middle;'>
+			<td width="20"></td>
+			<td align="center">
+				<div id="footer_copyright" style="width:100%;text-align:center;display: table-cell;height:30px;vertical-align:middle;">
 					MestreLion's Tools is not associated with Conquer Club or RISK online in any way. Copyright &copy; 2016 by MestreLion
 				</div>
 			</td>
-			<td width=20></td>
-			<td align=right>
-				<div id=footer_social>
-					<a style='padding-left:5px;padding-right:5px;' href='http://facebook.com/rodrigo.es.silva' target=_blank><img border=0 src='images/static/footer-facebookicon.png'></a>
-					<a style='padding-left:5px;padding-right:5px;' href='http://twitter.com/@RodrigoESSilva' target=_blank><img src='images/static/footer-twittericon.png'></a>
+			<td width="20"></td>
+			<td align="right">
+				<div id="footer_social">
+					<a style='padding-left:5px;padding-right:5px;' href='http://facebook.com/rodrigo.es.silva' target="_blank"><img src="images/static/footer-facebookicon.png" alt="facebook"/></a>
+					<a style='padding-left:5px;padding-right:5px;' href='http://twitter.com/@RodrigoESSilva'   target="_blank"><img src="images/static/footer-twittericon.png"  alt="twitter"/></a>
 				</div>
 			</td>
 		</tr>
