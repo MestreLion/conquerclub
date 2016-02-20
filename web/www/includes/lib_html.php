@@ -25,6 +25,15 @@ function HTML_Header($title="") {
 		fclose($fd);
 	}
 
+	// Localhost matching
+	$is_local = in_array($_SERVER["SERVER_NAME"],
+		array(
+			"localhost",
+			"127.0.0.1",
+			gethostname(),
+		)
+	);
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -132,6 +141,7 @@ function HTML_Header($title="") {
 		<li><a href="http://diceroll.stritar.net/risk.html">Dice Roll Simulation</a></li>
 	</ul>
 
+	<?if ($is_local) {?>
 	<h3>Development</h3>
 	<ul>
 		<li><a href="template.html">HTML Template</a></li>
@@ -139,6 +149,8 @@ function HTML_Header($title="") {
 		<li><a href="phpinfo.php">PHP Info</a></li>
 		<li><a href="error.php">Error Test</a></li>
 	</ul>
+	<?}?>
+
 </div>
 <!--- left column end -->
 				</div>
