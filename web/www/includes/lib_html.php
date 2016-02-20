@@ -33,8 +33,8 @@ function HTML_Header($title="") {
 			gethostname(),
 		)
 	);
-
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title><?=$APP['HTML_Title']?><?=$title?></title>
@@ -114,17 +114,18 @@ function HTML_Header($title="") {
 		<li><a href="cl7player.php">Player Rank</a></li>
 	</ul>
 
-	<?if ($announcements) {?>
+<?	if ($announcements) {?>
 	<h3>Announcements</h3>
 	<ul style='opacity:.9;font-size:10px;'>
-		<?foreach($announcements as $announcement) {?>
-		<li<?if($announcement['hidden']){?> class=announcements style="display:none;"<?}?>><a title="<?=htmlspecialchars($announcement['title'])?>" href="<?=urlencode($announcement['url'])?>">
-		<span class="player<?=$announcement['style']?>">&bull;&nbsp;</span><?=htmlspecialchars($announcement['title'])?></a></li>
-		<?}?>
+<?		foreach($announcements as $announcement) {?>
+		<li<?if($announcement['hidden']){?> class=announcements style="display:none;"<?}?>>
+			<a title="<?=htmlspecialchars($announcement['title'])?>" href="<?=urlencode($announcement['url'])?>"><span class="player<?=$announcement['style']?>">&bull;&nbsp;</span><?=htmlspecialchars($announcement['title'])?></a>
+		</li>
+<?		}?>
 		<li><a id=more href="#" onClick="showannouncements(); return false;">More</a></li>
 	</ul>
-	<?}?>
 
+<?	}?>
 	<h3>Conquer Club</h3>
 	<ul>
 		<li><a href="https://www.conquerclub.com/player.php?mode=mygames1">Central Command</a></li>
@@ -141,7 +142,7 @@ function HTML_Header($title="") {
 		<li><a href="http://diceroll.stritar.net/risk.html">Dice Roll Simulation</a></li>
 	</ul>
 
-	<?if ($is_local) {?>
+<?	if ($is_local) {?>
 	<h3>Development</h3>
 	<ul>
 		<li><a href="template.html">HTML Template</a></li>
@@ -149,8 +150,8 @@ function HTML_Header($title="") {
 		<li><a href="phpinfo.php">PHP Info</a></li>
 		<li><a href="error.php">Error Test</a></li>
 	</ul>
-	<?}?>
 
+<?	}?>
 </div>
 <!--- left column end -->
 				</div>
@@ -169,13 +170,13 @@ function HTML_Header($title="") {
 <p><?=$subtitle?></p>
 <?}?>
 <?function HTML_Pagination($page=1, $totalpages=1, $results=0, $url='?page=', $topbottom="top") {?>
-<?if ($topbottom == "top") {?>
+<?	if ($topbottom == "top") {?>
 <script type="text/javascript">
 	var totalPages = <?=$totalpages?>;
 	var currentPage = <?=$page?>;
 	var gotoUrl = "<?=$url?>";
 </script>
-<?}?>
+<?	}?>
 <div class="ccpagination">
 	<span class="search_results"><?=$results?> results on <?=$totalpages?> pages:</span>
 	<a href="<?=$url?>1" class="firstLast<?=($page<=1)?' disabled':''?>">&lt;&lt;</a>
