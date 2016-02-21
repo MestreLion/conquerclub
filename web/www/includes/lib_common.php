@@ -1,15 +1,19 @@
 <?php
 function get_str($var, $default="") {
-	return isset($_GET[$var]) ? $_GET[$var] : $default;
+	return isset($_GET[$var]) ? trim($_GET[$var]) : $default;
 }
 
 function get_int($var, $default=0) {
 	return intval(!empty($_GET[$var]) ? $_GET[$var] : $default);
 }
 
-# Alias to get_str
+function get_arr($var, $default=array()) {
+	return isset($_GET[$var]) ? $_GET[$var] : $default;
+}
+
+# Generic get. Same as get_str without trim()
 function get($var, $default="") {
-	return get_str($var, $default);
+	return isset($_GET[$var]) ? $_GET[$var] : $default;
 }
 
 function session($var, $default="") {

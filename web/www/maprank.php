@@ -4,8 +4,8 @@
 <?php
 
 # Default values
-$player = get("player", session("username"));
-$types  = get("type", array('P', 'D', 'T', 'Q'));
+$player = get_str("player", session("username"));
+$types  = get_arr("type",   array('P', 'D', 'T', 'Q'));
 
 HTML_Header("Map Rank");
 HTML_Content_Title("Map Rank", "");
