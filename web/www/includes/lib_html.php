@@ -1,6 +1,7 @@
 <?php
 function HTML_Header($title="") {
 	global $APP;
+	global $CLAN;
 
 	if ($title)
 		$title = " :: $title";
@@ -129,7 +130,7 @@ function HTML_Header($title="") {
 		<li><a href="https://www.conquerclub.com/player.php?mode=mygames1">Central Command</a></li>
 		<li><a href="https://www.conquerclub.com/forum/memberlist.php?mode=viewprofile&amp;un=<?=_U(session('username'))?>">Profile</a></li>
 		<li><a href="https://www.conquerclub.com/forum/index.php">Forum</a></li>
-		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=571">PACK Forum</a></li>
+		<li><a href="https://www.conquerclub.com/forum/viewforum.php?f=<?=_U($CLAN['forumid'])?>"><?=_H($CLAN['shortname'])?> Forum</a></li>
 	</ul>
 
 	<h3>Risk Tools</h3>

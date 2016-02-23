@@ -4,6 +4,6 @@
 <?php
 HTML_Header("CL7 Scoreboards");
 HTML_Content_Title("CL7 Scoreboards", "");
-HTML_AnimatedLoadURL("cgi-bin/league_scoreboard.cgi");
+HTML_AnimatedLoadURL("cgi-bin/league_scoreboard.cgi?clan=" . urlencode($CLAN['shortname']));
 HTML_Footer();
 ?>
