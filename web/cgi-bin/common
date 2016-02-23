@@ -14,6 +14,7 @@ urlencode() {
 		c="${data:i:1}"
 		case "$c" in
 			[a-zA-Z0-9.~_-]) printf "$c" ;;
+			\ ) printf '+';;
 			*) printf '%s' "$c" |
 				xxd -p -c1 |
 				while read c; do
