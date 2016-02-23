@@ -32,7 +32,10 @@ urldecode() {
 parse_get() {
 	OFS="$IFS"
 	IFS="&"
-	set -- $QUERY_STRING
+	set -- ${QUERY_STRING:-}
+	if !(($#)); then
+		return
+	fi
 	local array=("$@")
 	for param in "${array[@]}"; do
 		IFS="="
