@@ -12,14 +12,19 @@ HTML_Content_Title("Map Rank", "");
 HTML_Form($player, $types);
 
 if ($_GET) {
-	HTML_AnimatedLoadURL("cgi-bin/maprank.cgi" .
+	$url = "cgi-bin/maprank.cgi" .
 		"?player=" . urlencode($player) .
-		"&types="  . urlencode(implode($types, ','))
-	);
+		"&types="  . urlencode(implode($types, ','));
+	HTML_AnimatedLoadURL($url . "&info=1", "info");
+	HTML_Sep();
+	HTML_AnimatedLoadURL($url, "content");
 }
 
 HTML_Footer();
 ?>
+<?function HTML_Sep() {?>
+<p></p>
+<?}?>
 <?function HTML_Form($player, $types) {?>
 <form class="ccform" action="" method="get" id="find">
 <fieldset>

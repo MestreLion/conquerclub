@@ -6,4 +6,13 @@ fi
 
 [[ "${GET[player]}" ]] &&
 [[ "${GET[types]}"  ]] &&
-maprank -q --game-type "${GET[types]}" -- "${GET[player]}" | htmltable
+{
+	mapargs=(--game-type "${GET[types]}" -- "${GET[player]}")
+
+	if [[ "${GET[info]}" ]]; then
+		TERM=dumb maprank --only-info "${mapargs[@]}" |
+		sed 's/$/<br>/;s/* //'
+	else
+		maprank -q "${mapargs[@]}" | htmltable
+	fi
+}
