@@ -25,6 +25,7 @@ outfile=""
 
 delay=2.0
 verbose=1
+onlyinfo=0
 
 
 # Constants and other globals - DO NOT CHANGE! --------------------------------
@@ -73,9 +74,16 @@ usage() {
 
 	Display options:
 	  -h|--help     - Show this page
-	  -q|--quiet    - Do not output progress messages, which are normally
-	                  made to stderr. $myname will be completely silent
-	                  until the result is output to stdout (see --output)
+
+	  -q|--quiet    - Do not output the info header or progress messages,
+	                  which are normally sent to stderr. $myname will be
+	                  completely silent until the result is sent to stdout.
+	                  See --outfile
+
+	  --only-info   - Do not fetch or output any results, and send to stdout
+	                  the info header containing games, pages, player name
+	                  and ETA which are otherwise sent to stderr.
+	                  Overrides --outfile.
 
 	  --outfile OUTFILE
 	             Output results to OUTFILE instead of stdout.
@@ -236,6 +244,7 @@ while (( $# )); do
 	--outfile       ) shift ; outfile=${1:-}  ;;
 
 	-q|--quiet      ) verbose=0               ;;
+	--only-info     ) onlyinfo=1              ;;
 	--team          ) type="D,T,Q,P"          ;;
 
 	--              ) shift ; player="${1:-}"
@@ -256,7 +265,9 @@ if [[ "$type" ]]; then
 	urlsearch+="&ty=$type"
 fi
 
-if [[ "$outfile" ]]; then
+if   ((onlyinfo)); then
+	exec 2>&1 >/dev/null
+elif [[ "$outfile" ]]; then
 	exec > "$outfile"
 fi
 
@@ -280,6 +291,10 @@ pages=0
 		esac
 		eta="${minstr}$((secs % 60)) seconds"
 		header "$myname should take approximately $eta"
+
+		if ((onlyinfo)); then
+			exit
+		fi
 
 		if ((pages)); then
 			if [[ "$outfile" ]]; then
