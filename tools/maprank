@@ -23,7 +23,7 @@ player=""
 type=""
 outfile=""
 
-delay=2.0
+delay=1.2
 verbose=1
 onlyinfo=0
 
@@ -292,7 +292,7 @@ show_pages()
 
 		header "$games games in $pages pages found for player $name"
 
-		secs=$(bc <<< "$delay * $pages / 1")
+		secs=$(bc <<< "2 + $delay * ($pages - 1) / 1")
 		mins=$((secs / 60))
 		case "$mins" in
 		0) minstr="";;
