@@ -130,6 +130,7 @@ list_page() {
 		pages  = 0
 		wins   = 0
 		games  = 0
+		total  = 0
 		name   = player
 
 		if (!page)
@@ -171,9 +172,10 @@ list_page() {
 	}
 
 	END {
-		if (page >= pages)
-			exit 1
-	}'
+		if (!games)
+			print page, pages, total, name > "/dev/stderr"
+	}
+	'
 }
 
 print_page() {
@@ -276,10 +278,18 @@ fi
 
 page=1
 pages=0
+
+show_pages()
 {
 	# First page
 	{
 		read -r page pages games name
+
+		if ! ((pages)); then
+			header "Player not found: $player"
+			return
+		fi
+
 		header "$games games in $pages pages found for player $name"
 
 		secs=$(bc <<< "$delay * $pages / 1")
@@ -293,16 +303,14 @@ pages=0
 		header "$myname should take approximately $eta"
 
 		if ((onlyinfo)); then
-			exit
+			return
 		fi
 
-		if ((pages)); then
-			if [[ "$outfile" ]]; then
-				header "Saving results to $outfile"
-			fi
-			header "Reading page $page of $pages"
-			while read content; do echo "$content"; done
+		if [[ "$outfile" ]]; then
+			header "Saving results to $outfile"
 		fi
+		header "Reading page $page of $pages"
+		while read content; do echo "$content"; done
 	} < <(list_page "$page" 2>&1)
 
 	# Second page (no delay needed)
@@ -316,4 +324,5 @@ pages=0
 		print_page "$page" "$pages" &
 	done
 	wait
-} | print_results
+}
+show_pages | print_results
