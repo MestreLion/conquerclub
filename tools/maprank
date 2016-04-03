@@ -223,7 +223,18 @@ pages=0
 	# First page
 	{
 		read -r page pages games name
-		header "$games games found for player $name"
+		header "$games games in $pages pages found for player $name"
+
+		secs=$(bc <<< "$delay * $pages / 1")
+		mins=$((secs / 60))
+		case "$mins" in
+		0) minstr="";;
+		1) minstr="1 minute and ";;
+		*) minstr="$mins minutes and ";;
+		esac
+		eta="${minstr}$((secs % 60)) seconds"
+		header "$myname should take approximately $eta"
+
 		if ((pages)); then
 			if [[ "$outfile" ]]; then
 				header "Saving results to $outfile"
