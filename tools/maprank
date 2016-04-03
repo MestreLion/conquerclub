@@ -107,23 +107,6 @@ usage() {
 	exit 0
 }
 
-throttle() {
-	local delay=$1; shift
-	local cmd=("$@")
-
-	local start=$(now)
-	"${cmd[@]}"
-	local status=$?
-
-	local adjust=0.0075
-	local slp=$(awk -v s="$start" -v f=$(now) \
-			-v d="$delay" -v a="$adjust" '
-			BEGIN{slp=d-a-(f-s); if(slp<0) slp=0; print slp}')
-	sleep "$slp"
-
-	return "$status"
-}
-
 list_page() {
 	local page=$1
 	local url="${urlsearch}&page=$page"
@@ -185,6 +168,13 @@ list_page() {
 	}'
 }
 
+print_page() {
+	local page=$1
+	local pages=$2
+	header "Reading page $page of $pages"
+	list_page "$page" 2>/dev/null
+}
+
 
 # Command-line arguments ------------------------------------------------------
 
@@ -228,19 +218,33 @@ fi
 # Main logic and procedures ---------------------------------------------------
 
 page=1
-while throttle "$delay" list_page "$page" 2> >(
-	read -r pg pgs gms pl
-	if ((page == 1)); then
-		header "$gms games found for player $pl"
-		if [[ "$outfile" ]]; then
-			header "Saving results to $outfile"
+pages=0
+{
+	# First page
+	{
+		read -r page pages games name
+		header "$games games found for player $name"
+		if ((pages)); then
+			if [[ "$outfile" ]]; then
+				header "Saving results to $outfile"
+			fi
+			header "Reading page $page of $pages"
+			while read content; do echo "$content"; done
 		fi
+	} < <(list_page "$page" 2>&1)
+
+	# Second page (no delay needed)
+	if ((++page <= pages)); then
+		print_page "$page" "$pages" &
 	fi
-	header "Reading page $pg of $pgs"
-)
-do
-	((page++))
-done |
+
+	# Other pages
+	while ((++page <= pages)); do
+		sleep "$delay"
+		print_page "$page" "$pages" &
+	done
+	wait
+} |
 awk '
 BEGIN {
 	FS = "\t"
