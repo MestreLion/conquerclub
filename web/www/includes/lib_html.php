@@ -193,10 +193,34 @@ function HTML_Header($title="") {
 	</div>
 </div>
 <?}?>
-<?function HTML_AnimatedLoadURL($url, $id="1") {?>
-<div id="animatedloadurl_content_<?=_H($id)?>" align="center"><img src="images/static/loading-animation-7.gif" alt="loading..."/></div>
+<?function HTML_AnimatedLoadURL($url, $id="1", $header="", $footer="", $image=true) {?>
+<div id="animatedloadurl_content_<?=_H($id)?>" align="center">
+	<?=$header?><?if($image){?><img src="images/static/loading-animation-7.gif" alt="loading..."/><?}?><?=$footer?>
+</div>
 <script type="text/javascript">
 $(<?=_J("#animatedloadurl_content_" . $id)?>).load(<?=_J(_H($url))?>.replace(/\x26amp;/g, "\x26"));
+</script>
+<?}?>
+<?function HTML_AnimatedLoadNestedURLs(
+		$outer_url,
+		$inner_url,
+		$id="1",
+		$sep="",
+		$outer_header="",
+		$outer_footer="",
+		$inner_header="",
+		$inner_footer=""
+) {
+?>
+<div id="animatedloadurl_content_<?=_H($id)?>_outer" align="center">
+	<?=$outer_header?>
+	<?HTML_AnimatedLoadURL($inner_url, $id . "_inner", $inner_header, false, $inner_footer)?>
+	<?=$sep?>
+	<img src="images/static/loading-animation-7.gif" alt="loading..."/>
+	<?=$outer_footer?>
+</div>
+<script type="text/javascript">
+$(<?=_J("#animatedloadurl_content_" . $id . "_outer")?>).load(<?=_J(_H($outer_url))?>.replace(/\x26amp;/g, "\x26"));
 </script>
 <?}?>
 <?function HTML_Footer() {?>
