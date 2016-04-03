@@ -175,6 +175,52 @@ print_page() {
 	list_page "$page" 2>/dev/null
 }
 
+print_results() {
+	awk '
+	BEGIN {
+		FS = "\t"
+		OFS = "\t"
+		CONVFMT = "%04d"
+	}
+	{
+		win=$1
+		map=$2
+		sub(/ \(Random)$/, "", map)
+		games[map]++
+		if (win)
+			wins[map]++
+	}
+	END {
+		for (map in games) {
+			if (! (map in wins))
+				wins[map] = 0
+			perc = sprintf("%5.1f", 100.0 * wins[map] / games[map])
+			print perc, wins[map], games[map], map
+		}
+	}' |
+	LC_ALL=C sort -gr -k1,1 -k2,2 -k4 |
+	awk '
+	BEGIN {
+		FS = "\t"
+		OFS = "\t"
+		wins  = 0
+		games = 0
+		perc  = 0
+	}
+	{
+		if (!games)
+			print "WIN%", "WINS", "GAMES", "MAP"
+		wins  += $2
+		games += $3
+		print
+	}
+	END {
+		if (games)
+			perc = sprintf("%5.1f", 100.0 * wins / games)
+		print perc, wins, games, "TOTAL"
+	}'
+}
+
 
 # Command-line arguments ------------------------------------------------------
 
@@ -255,47 +301,4 @@ pages=0
 		print_page "$page" "$pages" &
 	done
 	wait
-} |
-awk '
-BEGIN {
-	FS = "\t"
-	OFS = "\t"
-	CONVFMT = "%04d"
-}
-{
-	win=$1
-	map=$2
-	sub(/ \(Random)$/, "", map)
-	games[map]++
-	if (win)
-		wins[map]++
-}
-END {
-	for (map in games) {
-		if (! (map in wins))
-			wins[map] = 0
-		perc = sprintf("%5.1f", 100.0 * wins[map] / games[map])
-		print perc, wins[map], games[map], map
-	}
-}' |
-LC_ALL=C sort -gr -k1,1 -k2,2 -k4 |
-awk '
-BEGIN {
-	FS = "\t"
-	OFS = "\t"
-	wins  = 0
-	games = 0
-	perc  = 0
-}
-{
-	if (!games)
-		print "WIN%", "WINS", "GAMES", "MAP"
-	wins  += $2
-	games += $3
-	print
-}
-END {
-	if (games)
-		perc = sprintf("%5.1f", 100.0 * wins / games)
-	print perc, wins, games, "TOTAL"
-}'
+} | print_results
