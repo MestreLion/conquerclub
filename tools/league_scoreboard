@@ -191,8 +191,10 @@ awk -v q="'" -v ongoing="$ongoing" '
 
 		if (ongoing)
 			criteria = ($5 != "War Waiting/ Games None")
-		else
-			criteria = ($5 == "War Active/ Games Inactive")
+		else {
+			criteria = (($5 == "War Active/ Games Inactive") ||
+			            ($5 == "War Complete/ Games Inactive"))
+		}
 
 		if (criteria) {
 			data[clanA, "Matches"] += 1
